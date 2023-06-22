@@ -1,0 +1,27 @@
+services:
+  react:
+    container_name: react
+    build: ./
+    ports:
+      - 3000:3000
+    volumes:
+      - react-volume:/var/www/html
+    stdin_open: true
+    privileged: true
+    tty: true
+
+  nginx:
+    container_name: nginx
+    build: ./nginx
+    ports:
+      - 80:80
+    volumes:
+      - react-volume:/var/www/html
+    depends_on:
+      - react
+    privileged: true
+    stdin_open: true
+    tty: true
+
+volumes:
+  react-volume:
