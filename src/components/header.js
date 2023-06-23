@@ -126,12 +126,12 @@ const LogoContainer = styled.div`
 const HeaderContainer = styled.header`
   white-space: wrap;
   background-color: dark;
-  height: 60px;
+  height: 70px;
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
+  padding: 0 40px;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
   position: fixed;
   background:rgba(0, 0, 0, 0.1);
@@ -141,6 +141,9 @@ const HeaderContainer = styled.header`
   z-index: 2;
   mask-border: linear-gradient(0deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 10%, rgb(255, 255, 255) 40%);
   animation: flipInX 1s;
+  @media (max-width: 400px){
+    padding: 0 20px;
+}
 `;
 
 const MenuHamburg = styled.div`
@@ -171,12 +174,12 @@ const NavItem = styled.h3`
 
 const ScrollToTopButton = styled.button`
   position: fixed;
-  top: 700px;
+  top: 90vh;
   right: 20px;
   width: 40px;
   height: 40px;
   border-radius: 60%;
-  background-color: #537895;
+  background-color: #0d71ff;
   color: #fff;
   border: none;
   display: flex;
@@ -185,7 +188,4 @@ const ScrollToTopButton = styled.button`
   cursor: pointer;
   font-size: 18px;
   z-index: 3;
-  @media (max-width: 900px){
-  top: 580px;
-}
 `;

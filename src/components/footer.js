@@ -17,10 +17,6 @@ export default function Footer() {
       </SocialContainer>
       <Logos src='https://www.appmasters.io/favicon.png' alt='a'></Logos>
       <LocationContainer>
-        <LocationTitle>Endereço:</LocationTitle>
-        <LocationText>
-          Av. Barão do Rio Branco 3480, <br/> Juiz de Fora - MG
-        </LocationText>
       </LocationContainer>
     </FooterContainer>
   );
@@ -29,7 +25,7 @@ export default function Footer() {
 const FooterContainer = styled.footer`
   background-color: #181A1B;
   color: #fff;
-  padding: 10px;
+  padding: 6px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -46,7 +42,7 @@ const FooterContainer = styled.footer`
 `;
 
 const Logos = styled.img`
-  margin-right: 150px;
+  margin-right: 20px;
   width: 200px;
   height: 150px;
   border:1px solid blue;    
@@ -65,11 +61,10 @@ const Logos = styled.img`
 
 const SocialContainer = styled.div`
   flex: 1;
-  margin-right: 20px;
+  margin-right: 30px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 20px;
   @media (max-width: 900px) {
     margin-right: 20px;
     margin-bottom: 0px;  
@@ -106,20 +101,7 @@ const LocationContainer = styled.div`
   @media (max-width: 900px) {
     order: 3;
     margin-top: 20px;
+    display: none !important;
   }
-`;
-
-const LocationTitle = styled.h4`
-  font-size: 18px;
-  font-weight: 500;
-  word-break: break-word;
-  margin-bottom: 10px;
-`;
-
-const LocationText = styled.p`
-  font-size: 16px;
-  margin: 0;
-  word-break: break-word;
-  margin-right: 10px;
 `;
 

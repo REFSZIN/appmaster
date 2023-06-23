@@ -5,7 +5,7 @@ export default function useAsync(handler, immediate = true) {
   const [loading, setLoading] = useState(immediate);
   const [error, setError] = useState(null);
 
-  const act = async(...args) => {
+  const act = async (...args) => {
     setLoading(true);
     setError(null);
 
@@ -17,7 +17,7 @@ export default function useAsync(handler, immediate = true) {
     } catch (err) {
       setError(err);
       setLoading(false);
-      throw err;
+      return act();
     }
   };
 
@@ -25,7 +25,6 @@ export default function useAsync(handler, immediate = true) {
     if (immediate && typeof handler === 'function') {
       act();
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

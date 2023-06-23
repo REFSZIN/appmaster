@@ -7,10 +7,7 @@ import {
 import { ToastContainer } from 'react-toastify';
 import { GamesProvider } from './contexts/GamesContext';
 import Home from './pages/Home';
-import lottie from 'lottie-web';
-import { defineElement } from 'lord-icon-element';
 
-defineElement(lottie.loadAnimation);
 export default function App() {
   return (
     <>

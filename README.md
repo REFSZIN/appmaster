@@ -7,6 +7,7 @@
 </h1>
 Seja bem-vindo ao Indicador de Games da AppMasters 👾
 <hr>
+     <img height="200px" src="https://media.tenor.com/MYZgsN2TDJAAAAAC/this-is.gif">
   <h3>Built With</h3>
   <img src="https://img.shields.io/badge/React-404D59?style=for-the-badge&logo=React&logoColor=blue" height="30px"/>
   <img src="https://img.shields.io/badge/Docker-316192?style=for-the-badge&logo=Docker&logoColor=white" height="30px"/>
