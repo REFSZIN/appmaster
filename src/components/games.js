@@ -170,7 +170,6 @@ export default function Games() {
 }
 
 const GamesContainer = styled.section`
-  margin-top: 80px;
   margin-bottom: 100px;
   width: 100%;
   display: flex;
