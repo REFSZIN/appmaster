@@ -56,9 +56,9 @@ Run DOCKER
   docker compose up --build -d
 ```
 
-<img height="100%" src="https://i.im.ge/2023/06/27/0hM50z.Screenshot-1.png">
-<img height="100%" src="https://i.im.ge/2023/06/27/0hM0rS.Screenshot-2.png">
-<img height="100%" src="https://i.im.ge/2023/06/27/0hMU6J.Screenshot-3.png">
+<img height="100%" src="https://user-images.githubusercontent.com/95008410/249187627-689a3aef-163c-4f48-abd9-c36a284e104c.png">
+<img height="100%" src="https://user-images.githubusercontent.com/95008410/249187645-fbf7fc6f-55d2-48eb-9d6a-3aa2bd5ea565.png">
+<img height="100%" src="https://user-images.githubusercontent.com/95008410/249187667-5a3b71db-8ac4-4cd4-a7bd-d3240cbc2a4e.png">
 
 <img width=100% src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=120&section=footer"/>
 
