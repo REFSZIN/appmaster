@@ -14,6 +14,7 @@ Seja bem-vindo ao Indicador de Games da AppMasters 👾
   <img src="https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E" height="30px"/>
   <img src="https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white" height="30px"/>
   <img src="https://img.shields.io/badge/Git-E34F26?style=for-the-badge&logo=git&logoColor=white" height="30px"/>
+    <img src="https://img.shields.io/badge/Firebase-E34F26?style=for-the-badge&logo=Firebase&logoColor=white" height="30px"/>
 </div>
 
 # Description

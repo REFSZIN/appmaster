@@ -5,6 +5,10 @@ import GamesContext from '../contexts/GamesContext';
 import { toast } from 'react-toastify';
 import LoaderGif from '../assets/loaders/loader.gif';
 import useGames from '../hooks/api/useGames';
+import { useNavigate } from 'react-router-dom';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import UserContext from '../contexts/UserContext';
 
 export default function Games() {
   const { gamesData, errormsg, setGamesData } = useContext(GamesContext);
@@ -12,20 +16,42 @@ export default function Games() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('');
   const [filteredGames, setFilteredGames] = useState([]);
+  const [favorites, setFavorites] = useState([]);
+  const [showFavorites, setShowFavorites] = useState(false);
   const { getGames } = useGames();
+  const [ratings, setRatings] = useState({});
+  const [sorting, setSorting] = useState('asc');
+  const [user, setUser] = useState(null);
+  // eslint-disable-next-line no-unused-vars
+  const { userData, setUserData } = useContext(UserContext);
+  const navigate = useNavigate();
+  const firebaseConfig = {
+    apiKey: "AIzaSyCmrOKFfM9TEqNcDmgYfytHrcOGg3lN2uY",
+    authDomain: "appmasters-8aa8e.firebaseapp.com",
+    projectId: "appmasters-8aa8e",
+    storageBucket: "appmasters-8aa8e.appspot.com",
+    messagingSenderId: "804104280141",
+    appId: "1:804104280141:web:189bbfb7d14391281ca404",
+    measurementId: "G-J4WJ5C7Z45"
+  };
 
   useEffect(() => {
     filterGames();
-  }, [searchQuery, selectedGenre, gamesData, getGames]);
+  }, [searchQuery, selectedGenre, gamesData]);
 
   useEffect(() => {
     setLoading(true);
     fetchData();
+    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+      setUser(user);
+    });
+    return () => unsubscribe();
   }, []);
 
   const fetchData = async () => {
     setLoading(true);
     try {
+      firebase.initializeApp(firebaseConfig);
       const response = await Promise.race([
         getGames(),
         new Promise((_, reject) =>
@@ -35,6 +61,8 @@ export default function Games() {
       setGamesData(response);
       setLoading(false);
       filterGames();
+      fetchFavorites();
+      fetchRatings();
     } catch (error) {
       handleError(error);
     }
@@ -49,10 +77,14 @@ export default function Games() {
       if ([500, 502, 503, 504, 507, 508, 509].includes(statusCode)) {
         toast.error('O servidor falhou em responder, tente recarregar a página.');
       } else {
-        toast.error('O servidor não conseguiu responder por agora, tente voltar novamente mais tarde.');
+        toast.error(
+          'O servidor não conseguiu responder por agora, tente voltar novamente mais tarde.'
+        );
       }
     } else {
-      toast.error('O servidor não conseguiu responder por agora, tente voltar novamente mais tarde.');
+      toast.error(
+        'O servidor não conseguiu responder por agora, tente voltar novamente mais tarde.'
+      );
     }
   };
 
@@ -79,13 +111,19 @@ export default function Games() {
 
   const filterGames = () => {
     let filtered = [];
+    
+    if (showFavorites) {
+      filtered = gamesData.filter((game) => favorites.includes(game.id));
+    }
 
     if (gamesData !== undefined) {
       filtered = gamesData;
 
       if (searchQuery !== '') {
         const query = searchQuery.toLowerCase();
-        filtered = filtered.filter((game) => game.title.toLowerCase().includes(query));
+        filtered = filtered.filter((game) =>
+          game.title.toLowerCase().includes(query)
+        );
       }
 
       if (selectedGenre !== '') {
@@ -95,6 +133,71 @@ export default function Games() {
 
     setFilteredGames(filtered);
   };
+  
+
+  const fetchFavorites = async () => {
+    const user = firebase.auth().currentUser;
+    if (user) {
+      const userRef = firebase.firestore().collection('users').doc('OixewtYxzSFIz8SkoKzx');
+      const snapshot = await userRef.get();
+      if (snapshot.exists) {
+        const data = snapshot.data();
+        setFavorites(data.favorites || []);
+      }
+    }
+  };
+
+  const fetchRatings = async () => {
+    const user = firebase.auth().currentUser;
+    if (user) {
+      const userRef = firebase.firestore().collection('users').doc('OixewtYxzSFIz8SkoKzx');
+      const snapshot = await userRef.get();
+      if (snapshot.exists) {
+        const data = snapshot.data();
+        setRatings(data.ratings || {});
+      }
+    }
+  };
+
+  const handleToggleFavorite = async (gameId) => {
+    const isFavorite = favorites.includes(gameId);
+    const updatedFavorites = isFavorite
+      ? favorites.filter((id) => id !== gameId)
+      : [...favorites, gameId];
+    setFavorites(updatedFavorites);
+
+    const user = firebase.auth().currentUser;
+    if (user) {
+      const userRef = firebase.firestore().collection('users').doc('OixewtYxzSFIz8SkoKzx');
+      await userRef.update({ favorites: updatedFavorites });
+    }
+  };
+
+  const handleToggleShowFavorites = () => {
+    setShowFavorites(!showFavorites);
+  };
+
+  const handleRateGame = async (gameId, rating) => {
+    setRatings({ ...ratings, [gameId]: rating });
+    if (user) {
+      const userRef = firebase.firestore().collection('users').doc('OixewtYxzSFIz8SkoKzx');
+      await userRef.update({ [`ratings.${gameId}`]: rating });
+    }
+  };
+
+  const handleToggleSorting = () => {
+    setSorting(sorting === 'asc' ? 'desc' : 'asc');
+  };
+
+  const sortedGames = [...filteredGames].sort((a, b) => {
+    const ratingA = ratings[a.id] || 0;
+    const ratingB = ratings[b.id] || 0;
+    if (sorting === 'asc') {
+      return ratingA - ratingB;
+    } else {
+      return ratingB - ratingA;
+    }
+  });
 
   const getUniqueGenres = () => {
     if (gamesData !== undefined) {
@@ -117,6 +220,14 @@ export default function Games() {
         ></lord-icon>
         <GamesTitle>Lista de Games</GamesTitle>
       </ContainerLoader>
+      <SearchContainer>
+        <Button onClick={handleToggleShowFavorites}>
+          {showFavorites ? 'Todos' : 'Favoritos'}
+        </Button>
+        <SortButton onClick={handleToggleSorting}>
+          Ordenar por Avaliação {sorting === 'asc' ? '↑' : '↓'}
+        </SortButton>
+      </SearchContainer>
       <SearchContainer>
         <SearchInput
           type="text"
@@ -147,16 +258,55 @@ export default function Games() {
         <NoResultsMessage>Nenhum resultado encontrado.</NoResultsMessage>
       ) : (
         <GamesGrid>
-          {filteredGames.map((game) => (
+          {sortedGames.map((game) => (
             <GameCard key={game.id}>
               <GameImage src={game.thumbnail} alt={game.title} />
-              <GameTitle>{game.title}</GameTitle>
+              <GameTitle>{game.title}              
+              <div>
+                <RatingContainer>
+                <FavoriteIcon
+                  onClick={() => {
+                    if (user) {
+                      handleToggleFavorite(game.id);
+                      toast('Game adicionado aos favoritos.');
+                    } else {
+                      navigate('/auth/');
+                      toast.error(
+                        'Realize o login para adicionar aos favoritos.'
+                      );
+                    }
+                  }}
+                  className={favorites.includes(game.id) ? 'favorite' : ''}
+                >
+                  ♡
+                </FavoriteIcon>
+                  {Array.from({ length: 5 }, (_, index) => (
+                    <StarIcon
+                      key={index}
+                      onClick={() => {
+                        if (user) {
+                          handleRateGame(game.id, index + 1);
+                          toast('Game avaliado.');
+                        } else {
+                          navigate('/auth/');
+                          toast.error('Realize o login para avaliar.');
+                        }
+                      }}
+                      className={index < ratings[game.id] ? 'rated' : ''}
+                    >
+                      ★
+                    </StarIcon>
+                  ))}
+                </RatingContainer>
+              </div></GameTitle>
               <GameDescription>{game.short_description}</GameDescription>
               <GameDetails>
                 <GameDetail>Plataforma: {game.platform}</GameDetail>
                 <GameDetail>Desenvolvedor: {game.developer}</GameDetail>
                 <GameDetail>Publicador: {game.publisher}</GameDetail>
-                <GameDetail>Data de Lançamento: {game.release_date}</GameDetail>
+                <GameDetail>
+                  Data de Lançamento: {game.release_date}
+                </GameDetail>
               </GameDetails>
               <GameLink href={game.game_url} target="_blank">
                 Jogar
@@ -169,6 +319,28 @@ export default function Games() {
   );
 }
 
+const FavoriteIcon = styled.span`
+  font-size: 40px;
+  margin-right: 20px;
+  cursor: pointer;
+  &.favorite {
+    color: red;
+  }
+`;
+
+const RatingContainer = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const StarIcon = styled.span`
+  font-size: 40px;
+  cursor: pointer;
+  &.rated {
+    color: yellow;
+  }
+`;
+
 const GamesContainer = styled.section`
   margin-bottom: 100px;
   width: 100%;
@@ -176,9 +348,6 @@ const GamesContainer = styled.section`
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  @media (max-width: 900px){
-  margin-bottom: 250px;
-}
 `;
 
 const GamesTitle = styled.h1`
@@ -195,7 +364,10 @@ const SearchContainer = styled.div`
   align-items: center;
   justify-content: center;
   margin-bottom: 20px;
-  animation: slideInUp 1s;
+
+  @media (max-width: 468px) {
+    width : 300px !important;
+  }
 `;
 
 const ContainerLoader = styled.div`
@@ -220,10 +392,9 @@ const SearchInput = styled.input`
   border: 1px solid #ccc;
   margin-right: 10px;
   width: 200px;
-  @media (max-width: 400px){
-  width: 140px;
-  margin-left: 10px;
-}
+    @media (max-width: 468px) {
+    width : 130px !important;
+  }
 `;
 
 const GenreSelect = styled.select`
@@ -231,10 +402,9 @@ const GenreSelect = styled.select`
   border-radius: 4px;
   border: 1px solid #ccc;
   width: 200px;
-  @media (max-width: 400px){
-  width: 120px;
-  margin-right: 10px;
-}
+    @media (max-width: 468px) {
+    width : 150px !important;
+  }
 `;
 
 const Loader = styled.div`
@@ -244,8 +414,6 @@ const Loader = styled.div`
   font-size: 18px;
   font-weight: bold;
   margin-top: 20px;
-  animation: rotateIn infinite;
-  margin-top: 60px;
 `;
 
 const ErrorMessage = styled.div`
@@ -275,10 +443,6 @@ const ErrorConteiner = styled.div`
   align-items: center;
   justify-content: center;
   margin-top: 20px;
-  @media (max-width: 420px){
-    flex-direction: column;
-    margin-left: 10px;
-}
 `;
 
 const GamesGrid = styled.div`
@@ -287,12 +451,13 @@ const GamesGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, minmax(420px, 1fr));
   padding: 20px;
+
   @media (max-width: 1200px) {
-    grid-template-columns: repeat(2, 1fr); 
+    grid-template-columns: repeat(2, 1fr);
   }
 
   @media (max-width: 768px) {
-    grid-template-columns: 1fr; 
+    grid-template-columns: 1fr;
   }
 `;
 
@@ -313,18 +478,20 @@ const GameCard = styled.div`
   margin: 20px;
   text-shadow: 0 0 1px rgb(187, 0, 255), 0 0 2px rgb(75, 5, 83),
     0 0 4px #0fa, 0 0 1px #0fa, 0 0 11px rgb(95, 11, 97);
-  :hover {
+
+  &:hover {
     box-shadow: 0px 0px 50px 1px rgba(0, 212, 117, 0.3);
   }
 `;
 
 const GameImage = styled.img`
   max-width: 100%;
-  height: auto;
+  height:auto;
   margin-bottom: 10px;
+
   &:hover {
-  transform: scale(1.01);
-  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+    transform: scale(1.01);
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
   }
 `;
 
@@ -338,7 +505,7 @@ const RefreshButton = styled.button`
   font-weight: bold;
   text-align: center;
   transition: background-color 0.3s ease;
-  margin-top: 20px;;
+  margin-top: 20px;
   cursor: pointer;
 
   &:hover {
@@ -397,4 +564,15 @@ const GameLink = styled.a`
   &:hover {
     background-color: #0056b3;
   }
+`;
+
+const Button = styled.button`
+  margin-right: 20px;
+  padding: 8px 12px;
+  border-radius: 4px;
+`;
+
+const SortButton = styled.button`
+  padding: 8px 12px;
+  border-radius: 4px;
 `;

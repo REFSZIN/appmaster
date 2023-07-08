@@ -1,20 +1,34 @@
 import React, { useContext, useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { FaDatabase, FaAlignRight,FaArrowUp  } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { FaAlignRight,FaArrowUp, FaUser } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import GamesContext from '../contexts/GamesContext';
+import UserContext from '../contexts/UserContext';
+import { toast } from 'react-toastify';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 
 export default function Header() {
+  const { userData , setUserData } = useContext(UserContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [showScrollButton, setShowScrollButton] = useState(false);
-  const { statusApi } = useContext(GamesContext);
+  const navigate = useNavigate();
 
+  const handleLogout = async () => {
+    try {
+      await firebase.auth().signOut();
+      setUserData(null);
+      navigate('/auth/');
+      toast('Usuário desconectado com sucesso.');
+    } catch (error) {
+      toast.error('Erro ao desconectar o usuário.');
+    }
+  };
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -57,7 +71,7 @@ export default function Header() {
         </ScrollToTopButton>
       )}
         <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-          <Tooltip title="Monitoramento">
+          <Tooltip title="Menu">
             <IconButton
               onClick={handleClick}
               size="small"
@@ -85,8 +99,8 @@ export default function Header() {
               filter: 'drop-shadow(0px 2px 8px #000)',
               mt: 1.5,
               '& .MuiAvatar-root': {
-                width: 32,
-                height: 32,
+                width: 42,
+                height: 42,
                 ml: -0.5,
                 mr: 1,
               },
@@ -107,12 +121,22 @@ export default function Header() {
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
           <MenuItem onClick={handleClose}>
-            <NavItem>
-              <Link to="/">
-                <FaDatabase></FaDatabase>
-                StatusApi: {statusApi === true ? <span>ONLINE</span>: <span>OFFLINE</span> }
+          <NavItem>
+            {userData? (
+              <div>
+                <LogoutButton onClick={handleLogout}>
+                  Sair
+                </LogoutButton>
+              </div>
+            ) : (
+              <div>
+              <Link to="/auth/">
+                <FaUser></FaUser>
+                Login
               </Link>
-            </NavItem>
+              </div>
+            )}
+          </NavItem>
           </MenuItem>
         </Menu>
       </MenuHamburg>
@@ -120,14 +144,27 @@ export default function Header() {
   );
 }
 
-const LogoContainer = styled.div`
+const LogoutButton = styled.button`
+  background-color: #007bff;
+  color: #fff;
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 14px;
+  font-weight: bold;
+  margin-left: 10px;
+  width: 90px;
+  &:hover {
+    background-color: #0056b3;
+  }
 `;
-
 const HeaderContainer = styled.header`
   white-space: wrap;
   background-color: dark;
   height: 70px;
-  width: 100%;
+  width: 100vw;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -147,6 +184,9 @@ const HeaderContainer = styled.header`
 `;
 
 const MenuHamburg = styled.div`
+`;
+
+const LogoContainer = styled.div`
 `;
 
 const LogoImg = styled.img`
