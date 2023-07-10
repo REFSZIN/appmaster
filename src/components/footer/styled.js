@@ -8,7 +8,7 @@ export const FooterContainer = styled.footer`
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid #aaa;
+  border-top: 1px solid #0056b3;
   width: 100%;
   display: flex;
   position: absolute;
@@ -22,7 +22,7 @@ export const FooterContainer = styled.footer`
 export const Logos = styled.img`
   margin-right: 20px;
   width: 200px;
-  height: 150px;
+  height: 100px;
   border:1px solid blue;    
   height:100px;
   border-radius:50%;

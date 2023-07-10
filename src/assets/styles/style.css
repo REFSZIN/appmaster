@@ -8,7 +8,7 @@
 }
 
 main {
-  background: linear-gradient(to top, rgb(9, 32, 63) 10%, rgb(83, 120, 149) 90%);
+  background: linear-gradient(to top, rgb(4, 19, 39) 10%, rgb(16, 17, 18) 90%);
   z-index: 1;
   overflow-x: hidden;
 }
@@ -18,7 +18,7 @@ svg{
 }
 
 ul{
-  background-color: rgb(40, 90, 189);
+  background-color: rgba(0,0,0,0.5);
 }
 
 .footerspace{

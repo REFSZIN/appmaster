@@ -91,7 +91,7 @@ export default function Login() {
             src="https://cdn.lordicon.com/ajkxzzfb.json"
             trigger="hover"
             colors="primary:#ffc738,secondary:#4bb3fd"
-            style={{ width: '250px', height: '250px' }}
+            style={{ width: '150px', height: '150px' }}
           />
         </LoginFormTitle>
         <Input

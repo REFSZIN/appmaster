@@ -83,7 +83,7 @@ export default function Games() {
   const handleError = (error) => {
     setLoading(false);
     if (error.message === 'Timeout') {
-      toast.error('O servidor demorou para responder, tente mais tarde.');
+      toast.error('O servidor demorou para responder, mas resolvemos por aqui 🍷🗿.');
     } else if (error.response) {
       const statusCode = error.response.status;
       if ([500, 502, 503, 504, 507, 508, 509].includes(statusCode)) {
@@ -274,7 +274,7 @@ export default function Games() {
           <span>Olá Visitante!</span>
         )}
       </ContainerLoader>
-      <SearchContainer>
+      {user ?      <SearchContainer>
         <Button onClick={handleToggleShowFavorites}>
           {showFavorites ? 'Todos' : 'Favoritos'}
         </Button>
@@ -284,7 +284,7 @@ export default function Games() {
         <DefaultSortButton onClick={handleToggleDefaultSorting}>
           Ordenar por Padrão
         </DefaultSortButton>
-      </SearchContainer>
+      </SearchContainer> : <></>}
       <SearchContainer>
         <SearchInput
           type="text"
@@ -322,7 +322,7 @@ export default function Games() {
             <GameCard key={game.id}>
               <GameImage src={game.thumbnail} alt={game.title} />
               <GameTitle>
-                {game.title}
+                {game.title}  -  {game.genre}
                 <div>
                   <RatingContainer>
                     <FavoriteIcon

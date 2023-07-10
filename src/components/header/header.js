@@ -1,6 +1,6 @@
 import { ScrollToTopButton, NavItem, LogoImg, LogoContainer, MenuHamburg, HeaderContainer, LogoutButton } from './styled';
 import React, { useContext, useState, useEffect } from 'react';
-import { FaAlignRight,FaArrowUp, FaUser } from 'react-icons/fa';
+import { FaAlignRight,FaArrowUp, FaUser,FaUsersSlash } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Menu from '@mui/material/Menu';
@@ -96,7 +96,7 @@ export default function Header() {
               background: 'black',
               overflow: 'visible',
               color: 'white',
-              filter: 'drop-shadow(0px 2px 8px #000)',
+              filter: 'drop-shadow(0px 22px 8px #000)',
               mt: 1.5,
               '& .MuiAvatar-root': {
                 width: 42,
@@ -125,14 +125,17 @@ export default function Header() {
             {userData? (
               <div>
                 <LogoutButton onClick={handleLogout}>
+                <FaUsersSlash></FaUsersSlash>
                   Sair
                 </LogoutButton>
               </div>
             ) : (
               <div>
               <Link to="/auth/">
+                <LogoutButton>
                 <FaUser></FaUser>
-                Login
+                  Login
+                </LogoutButton>
               </Link>
               </div>
             )}

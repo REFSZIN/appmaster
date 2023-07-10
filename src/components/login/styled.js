@@ -1,27 +1,30 @@
 import styled from 'styled-components';
 
 export const LoginContainer = styled.section`
-  margin-bottom: 100px;
+  margin-bottom: 20px;
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   @media (max-width: 900px) {
-    margin-bottom: 250px;
+    margin-bottom: 200px;
   }
 `;
 
 export const LoginForm = styled.div`
   background-color: #181A1B;
-  margin-top: 160px;
+  margin-top: 120px;
   border: 1px solid #0056b3;
   border-radius: 4px;
   padding: 20px;
   width: 300px;
   max-width: 100%;
+  animation: fadeInUp 1s;
+  margin-bottom: 120px;
   @media (max-width: 900px) {
     margin-top: 100px;
+    margin-bottom: 80px;
   }
 `;
 
@@ -38,6 +41,7 @@ export const LoginFormBtns = styled.div`
   margin-top: 20px;
   margin-bottom: 20px;
   font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  animation: fadeIn 3s;
 `;
 
 export const LoginFormTitle = styled.div`
@@ -59,12 +63,14 @@ export const Input = styled.input`
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-bottom: 10px;
+    animation: fadeInUp 1s;
 `;
 
 export const InputContainer = styled.div`
   position: relative;
   display: flex;
   align-items: center;
+    animation: fadeInUp 1s;
 `;
 
 export const Button = styled.button`

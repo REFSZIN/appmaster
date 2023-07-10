@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const LogoutButton = styled.button`
-  background-color: #007bff;
+  background-color: rgba(0,0,0,0.5);
   color: #fff;
   padding: 8px;
   border: none;
@@ -13,7 +13,7 @@ export const LogoutButton = styled.button`
   margin-left: 10px;
   width: 90px;
   &:hover {
-    background-color: #0056b3;
+    background-color: #0026b3;
   }
 `;
 
@@ -58,7 +58,7 @@ export const NavItem = styled.h3`
   font-size: 18px;
   font-weight: 500;
   color: #555;
-  margin: 0 10px;
+  margin: 10px;
   cursor: pointer;
   font-family: "Lexend Deca", sans-serif;
   font-family: 'Inter', sans-serif;

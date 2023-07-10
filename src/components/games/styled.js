@@ -17,7 +17,7 @@ export const RatingContainer = styled.div`
 `;
 
 export const StarIcon = styled.span`
-  font-size: 40px;
+  font-size: 30px;
   cursor: pointer;
   &.rated {
     color: yellow;
@@ -40,7 +40,7 @@ export const GamesTitle = styled.h1`
   text-align: center;
   margin-top: 20px;
   margin-bottom: 20px;
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  font-family: 'Franklin Gothic Medium', sans-serif;
 `;
 
 export const SearchContainer = styled.div`
@@ -65,9 +65,6 @@ export const DefaultSortButton = styled.button`
   cursor: pointer;
   margin-left: 10px;
   word-break: break-word;
-  &:hover {
-    background-color: #0056b3;
-  }
 `;
 
 export const ContainerLoader = styled.div`
@@ -79,6 +76,7 @@ export const ContainerLoader = styled.div`
   justify-content: center;
   align-items: center;
   height: 400px;
+  animation: fadeIn 2s;
 `;
 
 export const GifLoader = styled.img`
@@ -143,6 +141,10 @@ export const NoResultsMessage = styled.div`
 
 export const ErrorAviso = styled.div`
   margin-top: 20px;
+  margin-bottom: 100px !important;
+  & img{
+    margin-left: 22px;
+  }
   @media (max-width: 900px) {
     margin-bottom: 200px !important;
   }
@@ -181,16 +183,22 @@ export const GameCard = styled.div`
   animation: fadeInUp 1s;
   background-image: linear-gradient(
     163deg,
-    rgb(40, 90, 189) 80%,
-    #3700ff 100%
+    rgba(0,0,0,0.5) 80%,
+    #181A1B 100%
   );
   border-radius: 20px;
   transition: all 0.3s;
   margin: 20px;
   text-shadow: 0 0 1px rgb(187, 0, 255), 0 0 2px rgb(75, 5, 83),
     0 0 4px #0fa, 0 0 1px #0fa, 0 0 11px rgb(95, 11, 97);
+    border-radius: 48px;
+    background-color: rgba(0,0,0,0.5);
+  box-shadow: 6px 6px 12px #181A1B;
   &:hover {
-    box-shadow: 0px 0px 50px 1px rgba(0, 212, 117, 0.3);
+    box-shadow: 0px 0px 20px 1px #007bff;;
+    & img{
+      transform: scale(1.02);
+    }
   }
 `;
 
@@ -199,7 +207,6 @@ export const GameImage = styled.img`
   height:auto;
   margin-bottom: 10px;
   &:hover {
-    transform: scale(1.01);
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
   }
 `;
@@ -228,6 +235,7 @@ export const GameTitle = styled.span`
   word-wrap: break-word;
   overflow: hidden;
   text-overflow: ellipsis;
+    word-break: break-word;
 `;
 
 export const GameDescription = styled.p`
@@ -267,6 +275,8 @@ export const GameLink = styled.a`
   font-weight: bold;
   text-align: center;
   transition: background-color 0.3s ease;
+  margin: 5%;
+  margin-bottom: 0%;
   cursor: pointer;
   &:hover {
     background-color: #0056b3;
@@ -278,11 +288,13 @@ export const Button = styled.button`
   margin-right: 20px;
   padding: 8px 12px;
   border-radius: 4px;
+    font-weight: bold;
   word-break: break-word;
 `;
 
 export const SortButton = styled.button`
   padding: 8px 12px;
   border-radius: 4px;
+    font-weight: bold;
   word-break: break-word;
 `;
