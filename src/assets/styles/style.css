@@ -9,6 +9,8 @@
 
 main {
   background: linear-gradient(to top, rgb(9, 32, 63) 10%, rgb(83, 120, 149) 90%);
+  z-index: 1;
+  overflow-x: hidden;
 }
 
 svg{

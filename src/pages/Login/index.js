@@ -1,6 +1,6 @@
-import Header from '../../components/header';
-import Login from '../../components/login';
-import Footer from '../../components/footer';
+import Header from '../../components/header/header';
+import Login from '../../components/login/login';
+import Footer from '../../components/footer/footer';
 import styled from 'styled-components';
 
 export default function LoginPage() {
