@@ -23,6 +23,7 @@ export default function Login() {
     setPassword('');
     setConfirmPassword('');
     setName('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [isLoginScreen]);
 
   const handleLogin = async () => {

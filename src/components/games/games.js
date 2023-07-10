@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FavoriteIcon, RatingContainer, StarIcon, GamesContainer, GamesTitle, SearchContainer, DefaultSortButton, ContainerLoader, GifLoader, SearchInput, GenreSelect, Loader, ErrorMessage, NoResultsMessage, ErrorConteiner, GamesGrid, GameCard, GameImage, RefreshButton,GameTitle, GameDescription, GameDetails, GameDetail, GameLink, Button, SortButton } from './styled';
+import { FavoriteIcon, RatingContainer, StarIcon, GamesContainer, GamesTitle, SearchContainer, DefaultSortButton, ContainerLoader, GifLoader, SearchInput, GenreSelect, Loader, ErrorMessage, NoResultsMessage, ErrorConteiner, GamesGrid, GameCard, GameImage, RefreshButton,GameTitle, GameDescription, GameDetails, GameDetail, GameLink, Button, SortButton, ErrorAviso } from './styled';
 import React, { useState, useEffect, useContext } from 'react';
 import GamesContext from '../../contexts/GamesContext';
 import { toast } from 'react-toastify';
@@ -24,7 +24,8 @@ export default function Games() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const [defaultSorting, setDefaultSorting] = useState(true);
-  const [isFirstRender, setIsFirstRender] = useState(true); 
+  const [isFirstRender, setIsFirstRender] = useState(true);
+
   const firebaseConfig = {
     apiKey: "AIzaSyCmrOKFfM9TEqNcDmgYfytHrcOGg3lN2uY",
     authDomain: "appmasters-8aa8e.firebaseapp.com",
@@ -59,6 +60,7 @@ export default function Games() {
   }, [isFirstRender, filteredGames]);
 
   const fetchData = async () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setLoading(true);
     try {
       firebase.initializeApp(firebaseConfig);
@@ -274,7 +276,7 @@ export default function Games() {
       </ContainerLoader>
       <SearchContainer>
         <Button onClick={handleToggleShowFavorites}>
-          {showFavorites ? 'Mostrar Todos' : 'Mostrar Favoritos'}
+          {showFavorites ? 'Todos' : 'Favoritos'}
         </Button>
         <SortButton onClick={handleToggleSorting}>
           Ordenar por Avaliação {sorting === 'asc' ? '↑' : '↓'}
@@ -310,10 +312,10 @@ export default function Games() {
           <RefreshButton onClick={handleRefresh}>Atualizar</RefreshButton>
         </ErrorConteiner>
       ) : filteredGames.length === 0 && gamesData.length !== 0 ? (
-        <div>
+        <ErrorAviso>
           <GifLoader src={a404} alt="Loader" />
           <NoResultsMessage>Nenhum resultado encontrado.</NoResultsMessage>
-        </div>
+        </ErrorAviso>
       ) : (
         <GamesGrid>
           {sortedGames.map((game) => (

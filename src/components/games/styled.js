@@ -141,6 +141,13 @@ export const NoResultsMessage = styled.div`
   word-break: break-word;
 `;
 
+export const ErrorAviso = styled.div`
+  margin-top: 20px;
+  @media (max-width: 900px) {
+    margin-bottom: 200px !important;
+  }
+`;
+
 export const ErrorConteiner = styled.div`
   display: flex;
   align-items: center;
@@ -154,11 +161,9 @@ export const GamesGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, minmax(420px, 1fr));
   padding: 20px;
-
   @media (max-width: 1200px) {
     grid-template-columns: repeat(2, 1fr);
   }
-
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
@@ -184,7 +189,6 @@ export const GameCard = styled.div`
   margin: 20px;
   text-shadow: 0 0 1px rgb(187, 0, 255), 0 0 2px rgb(75, 5, 83),
     0 0 4px #0fa, 0 0 1px #0fa, 0 0 11px rgb(95, 11, 97);
-
   &:hover {
     box-shadow: 0px 0px 50px 1px rgba(0, 212, 117, 0.3);
   }
@@ -194,7 +198,6 @@ export const GameImage = styled.img`
   max-width: 100%;
   height:auto;
   margin-bottom: 10px;
-
   &:hover {
     transform: scale(1.01);
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
@@ -213,7 +216,6 @@ export const RefreshButton = styled.button`
   transition: background-color 0.3s ease;
   margin-top: 20px;
   cursor: pointer;
-
   &:hover {
     background-color: #0056b3;
   }
@@ -266,13 +268,13 @@ export const GameLink = styled.a`
   text-align: center;
   transition: background-color 0.3s ease;
   cursor: pointer;
-
   &:hover {
     background-color: #0056b3;
   }
 `;
 
 export const Button = styled.button`
+  width: 150px;
   margin-right: 20px;
   padding: 8px 12px;
   border-radius: 4px;
