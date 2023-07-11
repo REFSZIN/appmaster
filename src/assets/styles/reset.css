@@ -8,6 +8,11 @@
 @import 'https://fonts.googleapis.com/icon?family=Material+Icons';
 
 * {
+		
+	font-family: 'Lexend Deca';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
 	box-sizing: border-box;
 	scroll-behavior: smooth;
 	word-wrap: break-word;

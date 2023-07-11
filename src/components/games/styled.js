@@ -35,7 +35,7 @@ export const GamesContainer = styled.section`
 `;
 
 export const GamesTitle = styled.h1`
-  font-size: 24px;
+  font-size: 34px;
   font-weight: bold;
   text-align: center;
   margin-top: 20px;
@@ -251,6 +251,7 @@ export const GameTitle = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-word;
+  text-align: center;
 `;
 
 export const GameDescription = styled.p`
