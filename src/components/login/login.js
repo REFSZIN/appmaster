@@ -90,19 +90,23 @@ export default function Login() {
           <lord-icon
             src="https://cdn.lordicon.com/ajkxzzfb.json"
             trigger="hover"
+            alt="UserIcon"
             colors="primary:#ffc738,secondary:#4bb3fd"
             style={{ width: '150px', height: '150px' }}
           />
         </LoginFormTitle>
         <Input
           type="email"
+          name="email"
           placeholder="Email"
           value={email}
+          autoComplete='email'
           onChange={(e) => setEmail(e.target.value)}
         />
         {isLoginScreen ? null : (
           <Input
             type="text"
+            name="Nome"
             placeholder="Nome"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -112,6 +116,7 @@ export default function Login() {
           <Input
             type={showPassword ? 'text' : 'password'}
             placeholder="Senha"
+            name="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -125,6 +130,7 @@ export default function Login() {
               type={showConfirmPassword ? 'text' : 'password'}
               placeholder="Confirmar Senha"
               value={confirmPassword}
+              name="confirmPassword"
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
             <PasswordToggle onClick={toggleConfirmPasswordVisibility}>

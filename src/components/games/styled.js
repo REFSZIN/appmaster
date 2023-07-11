@@ -48,8 +48,18 @@ export const SearchContainer = styled.div`
   align-items: center;
   justify-content: center;
   margin-bottom: 20px;
+  @media (max-width: 550px) {
+    width: 300px !important;
+    flex-direction: column;
+  }
+`;
 
-  @media (max-width: 468px) {
+export const SearchContainerBusca = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  @media (max-width: 550px) {
     width: 300px !important;
   }
 `;
@@ -65,6 +75,10 @@ export const DefaultSortButton = styled.button`
   cursor: pointer;
   margin-left: 10px;
   word-break: break-word;
+  @media (max-width: 550px) {
+    margin-left: 0px;
+    margin-top: 10px;
+  }
 `;
 
 export const ContainerLoader = styled.div`
@@ -206,6 +220,7 @@ export const GameImage = styled.img`
   max-width: 100%;
   height:auto;
   margin-bottom: 10px;
+  border-radius: 20px;
   &:hover {
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
   }
@@ -235,7 +250,7 @@ export const GameTitle = styled.span`
   word-wrap: break-word;
   overflow: hidden;
   text-overflow: ellipsis;
-    word-break: break-word;
+  word-break: break-word;
 `;
 
 export const GameDescription = styled.p`
@@ -288,8 +303,12 @@ export const Button = styled.button`
   margin-right: 20px;
   padding: 8px 12px;
   border-radius: 4px;
-    font-weight: bold;
+  font-weight: bold;
   word-break: break-word;
+    @media (max-width: 550px) {
+    margin: 0px;
+    margin-top: 10px;
+  }
 `;
 
 export const SortButton = styled.button`
@@ -297,4 +316,8 @@ export const SortButton = styled.button`
   border-radius: 4px;
     font-weight: bold;
   word-break: break-word;
+    @media (max-width: 550px) {
+    margin-left: 0px;
+    margin-top: 10px;
+  }
 `;

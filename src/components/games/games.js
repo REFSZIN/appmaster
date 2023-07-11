@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FavoriteIcon, RatingContainer, StarIcon, GamesContainer, GamesTitle, SearchContainer, DefaultSortButton, ContainerLoader, GifLoader, SearchInput, GenreSelect, Loader, ErrorMessage, NoResultsMessage, ErrorConteiner, GamesGrid, GameCard, GameImage, RefreshButton,GameTitle, GameDescription, GameDetails, GameDetail, GameLink, Button, SortButton, ErrorAviso } from './styled';
+import { FavoriteIcon, RatingContainer, StarIcon, GamesContainer, GamesTitle, SearchContainer, DefaultSortButton, ContainerLoader, GifLoader, SearchInput, GenreSelect, Loader, ErrorMessage, NoResultsMessage, ErrorConteiner, GamesGrid, GameCard, GameImage, RefreshButton,GameTitle, GameDescription, GameDetails, GameDetail, GameLink, Button, SortButton, ErrorAviso, SearchContainerBusca } from './styled';
 import React, { useState, useEffect, useContext } from 'react';
 import GamesContext from '../../contexts/GamesContext';
 import { toast } from 'react-toastify';
@@ -46,7 +46,7 @@ export default function Games() {
     const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
       setUser(user);
       if (user) {
-        toast(`Bem-vindo, ${user.displayName}!`);
+        toast(`Bem-vindo 😍, ${user.displayName} !`);
       }
     });
     return () => unsubscribe();
@@ -263,18 +263,20 @@ export default function Games() {
       <ContainerLoader>
         <lord-icon
           src="https://cdn.lordicon.com/bbsvenly.json"
+          alt="Joystick"
           trigger="hover"
           colors="outline:#121331,primary:#2b91ff,secondary:#f10005,tertiary:#646e78"
           style={{ width: '250px', height: '250px' }}
         ></lord-icon>
-        <GamesTitle>Lista de Games</GamesTitle>
+        <GamesTitle>Master👾Games</GamesTitle>
         {user ? (
-          <GameTitle>Olá novamente {user.displayName}!</GameTitle>
+          <GameTitle>Olá novamente {user.displayName}, divirta-se!</GameTitle>
         ) : (
-          <span>Olá Visitante!</span>
+          <GameTitle>Olá Visitante! 💖</GameTitle>
         )}
       </ContainerLoader>
-      {user ?      <SearchContainer>
+      {user ?      
+      <SearchContainer>
         <Button onClick={handleToggleShowFavorites}>
           {showFavorites ? 'Todos' : 'Favoritos'}
         </Button>
@@ -285,22 +287,23 @@ export default function Games() {
           Ordenar por Padrão
         </DefaultSortButton>
       </SearchContainer> : <></>}
-      <SearchContainer>
+      <SearchContainerBusca>
         <SearchInput
           type="text"
+          name="busca"
           placeholder="Buscar por título"
           value={searchQuery}
           onChange={handleSearch}
         />
-        <GenreSelect value={selectedGenre} onChange={handleGenreSelect}>
-          <option value="">Todos os gêneros</option>
+        <GenreSelect name="buscaSelect" value={selectedGenre} onChange={handleGenreSelect}>
+          <option key={''} value="">Todos os gêneros</option>
           {uniqueGenres.map((genre) => (
             <option key={genre} value={genre}>
               {genre}
             </option>
           ))}
         </GenreSelect>
-      </SearchContainer>
+      </SearchContainerBusca>
       {loading || gamesData === undefined || gamesData.length === 0 ? (
         <ContainerLoader>
           <GifLoader src={LoaderGif} alt="Loader" />

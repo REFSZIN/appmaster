@@ -41,7 +41,6 @@ export default function LoginPage() {
         cubeHeight = 10 + (Math.sin(x / xRows * Math.PI) + Math.sin(z / zRows * Math.PI)) * 200 + Math.random() * 150;
         const geometry = new THREE.BoxGeometry(cubeSize, cubeHeight, cubeSize);
         const material = new THREE.MeshPhongMaterial({
-          ambient: 0x030303,
           color: 0x4444ff,
           specular: 0xffffff,
           shininess: 10,
