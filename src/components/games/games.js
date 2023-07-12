@@ -25,7 +25,8 @@ export default function Games() {
   const navigate = useNavigate();
   const [defaultSorting, setDefaultSorting] = useState(true);
   const [isFirstRender, setIsFirstRender] = useState(true);
-
+  const [isSortingAlphabetically, setIsSortingAlphabetically] = useState(true);
+  
   const firebaseConfig = {
     apiKey: "AIzaSyCmrOKFfM9TEqNcDmgYfytHrcOGg3lN2uY",
     authDomain: "appmasters-8aa8e.firebaseapp.com",
@@ -122,20 +123,35 @@ export default function Games() {
   };
 
   const handleToggleDefaultSorting = () => {
-    setSorting(defaultSorting ? '' : 'asc');
-    setDefaultSorting(true);
+    setDefaultSorting(!defaultSorting);
+    setIsSortingAlphabetically(true);
+    setFilteredGames((prevFilteredGames) => {
+      if (defaultSorting) {
+        setSorting('');
+        return [...prevFilteredGames].sort((a, b) => a.title.localeCompare(b.title));
+      } else {
+        setSorting('');
+        if (showFavorites) {
+          const sortedFavorites = favorites
+            .map((favoriteId) => prevFilteredGames.find((game) => game.id === favoriteId))
+            .filter((game) => game !== undefined);
+          return sortedFavorites;
+        }
+        return [...gamesData];
+      }
+    });
   };
 
   const filterGames = () => {
     let filtered = [];
-
+  
     if (showFavorites) {
       filtered = gamesData.filter((game) => favorites.includes(game.id));
-
+  
       if (selectedGenre !== '') {
         filtered = filtered.filter((game) => game.genre === selectedGenre);
       }
-
+  
       if (searchQuery !== '') {
         const query = searchQuery.toLowerCase();
         filtered = filtered.filter((game) =>
@@ -156,8 +172,15 @@ export default function Games() {
         }
       }
     }
-
+  
     setFilteredGames(filtered);
+  
+    if (isSortingAlphabetically) {
+      setSorting('');
+      setFilteredGames((prevFilteredGames) => {
+        return [...prevFilteredGames].sort((a, b) => a.title.localeCompare(b.title));
+      });
+    }
   };
 
   const fetchFavorites = async () => {
@@ -184,43 +207,73 @@ export default function Games() {
     }
   };
 
-  const handleToggleFavorite = async (gameId) => {
-    const isFavorite = favorites.includes(gameId);
-    const updatedFavorites = isFavorite
-      ? favorites.filter((id) => id !== gameId)
-      : [...favorites, gameId];
-    const user = firebase.auth().currentUser;
-    if (user) {
-      try {
-        const userRef = firebase.firestore().collection('users').doc('OixewtYxzSFIz8SkoKzx');
-        await userRef.update({ favorites: updatedFavorites });
-        setFavorites(updatedFavorites);
-        if (isFavorite) {
-          toast.info('Jogo removido dos favoritos.');
-        } else {
-          toast.success('Jogo adicionado aos favoritos.');
-        }
-      } catch (error) {
-        toast.error('Ocorreu um erro ao atualizar os favoritos.');
+const handleToggleFavorite = async (gameId) => {
+  const isFavorite = favorites.includes(gameId);
+  const updatedFavorites = isFavorite
+    ? favorites.filter((id) => id !== gameId)
+    : [...favorites, gameId];
+  const user = firebase.auth().currentUser;
+  if (user) {
+    try {
+      const userRef = firebase.firestore().collection('users').doc('OixewtYxzSFIz8SkoKzx');
+      await userRef.update({ favorites: updatedFavorites });
+      setFavorites(updatedFavorites);
+      setFilteredGames((prevFilteredGames) => {
+        const updatedGames = prevFilteredGames.map((game) => {
+          if (game.id === gameId) {
+            return { ...game, isFavorite: !isFavorite };
+          }
+          return game;
+        });
+        return [...updatedGames];
+      });
+      if (isFavorite) {
+        toast.info('Game removido dos favoritos.');
+      } else {
+        toast.success('Game adicionado aos favoritos.');
       }
-    } else {
-      navigate('/auth/');
-      toast.error('Realize o login para adicionar favoritos.');
+    } catch (error) {
+      toast.error('Ocorreu um erro ao atualizar os favoritos.');
     }
-  };
+  } else {
+    navigate('/auth/');
+    toast.error('Realize o login para adicionar favoritos.');
+  }
+};
 
   const handleToggleShowFavorites = () => {
     setShowFavorites(!showFavorites);
     setSelectedGenre('');
+    setSorting('');
+    if(!showFavorites){
+      setIsSortingAlphabetically(false);
+    }
   };
 
   const handleRateGame = async (gameId, rating) => {
-    setRatings({ ...ratings, [gameId]: rating });
     const user = firebase.auth().currentUser;
+    
     if (user) {
       const userRef = firebase.firestore().collection('users').doc('OixewtYxzSFIz8SkoKzx');
-      await userRef.update({ [`ratings.${gameId}`]: rating });
-      toast.success('Jogo avaliado.');
+      const userSnapshot = await userRef.get();
+      
+      if (userSnapshot.exists) {
+        const userData = userSnapshot.data();
+        const previousRating = userData.ratings && userData.ratings[gameId];
+        
+        let updatedRatings;
+        if (previousRating === rating) {
+          delete userData.ratings[gameId];
+          updatedRatings = { ...userData.ratings };
+          toast.success('Avaliação retirada.');
+        } else {
+          updatedRatings = { ...userData.ratings, [gameId]: rating };
+          toast.success('Game avaliado.');
+        }
+        
+        await userRef.update({ ratings: updatedRatings });
+        setRatings(updatedRatings);
+      }
     } else {
       navigate('/auth/');
       toast.error('Realize o login para avaliar.');
@@ -229,6 +282,7 @@ export default function Games() {
 
   const handleToggleSorting = () => {
     setSorting(sorting === 'asc' ? 'desc' : 'asc');
+    setIsSortingAlphabetically(false);
   };
 
   let sortedGames = [...filteredGames];
@@ -284,7 +338,7 @@ export default function Games() {
           Ordenar por Avaliação {sorting === 'asc' ? '↑' : '↓'}
         </SortButton>
         <DefaultSortButton onClick={handleToggleDefaultSorting}>
-          Ordenar por Padrão
+          Ordenar por {!defaultSorting ? 'Padrão' : 'Alfabética'}
         </DefaultSortButton>
       </SearchContainer> : <></>}
       <SearchContainerBusca>
