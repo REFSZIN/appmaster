@@ -23,7 +23,7 @@ export default function Games() {
   const [sorting, setSorting] = useState('');
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
-  const [defaultSorting, setDefaultSorting] = useState(true);
+  const [defaultSorting, setDefaultSorting] = useState(false);
   const [isFirstRender, setIsFirstRender] = useState(true);
   const [isSortingAlphabetically, setIsSortingAlphabetically] = useState(true);
   
