@@ -46,7 +46,7 @@ export default function Header() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [sorting, setSorting] = useState('');
   const [uniqueGenres, setUniqueGenres] = useState([]);
-  const [setFilteredGames] = useState([]);
+  const [filteredGames, setFilteredGames] = useState([]);
   const [isSortingAlphabetically, setIsSortingAlphabetically] = useState(false);
   const [favorites] = useState([]);
 
