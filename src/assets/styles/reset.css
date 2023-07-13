@@ -90,7 +90,7 @@ button div{
 
 button:hover{
 	cursor: pointer;
-  filter: brightness(1.1);
+  filter: brightness(1.01);
   box-shadow: 1px 1px 2px 1px #FFFF;
 }
 

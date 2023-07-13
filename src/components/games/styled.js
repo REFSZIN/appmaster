@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { FaPlayCircle } from 'react-icons/fa';
 
 export const FavoriteIcon = styled.span`
   font-size: 40px;
@@ -215,16 +216,16 @@ export const GameCard = styled.div`
     }
   }
 `;
-
-export const GameImage = styled.img`
+export const YTiframe = styled.iframe`
   max-width: 100%;
-  height:auto;
+  height: ${props => props.height}px;
   margin-bottom: 10px;
   border-radius: 20px;
   &:hover {
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
   }
 `;
+
 
 export const RefreshButton = styled.button`
   padding: 8px 12px;
@@ -295,6 +296,7 @@ export const GameLink = styled.a`
   margin-bottom: 0%;
   cursor: pointer;
   &:hover {
+    cursor: pointer;
     background-color: #0056b3;
   }
 `;
@@ -310,6 +312,9 @@ export const Button = styled.button`
     margin: 0px;
     margin-top: 10px;
   }
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 export const SortButton = styled.button`
@@ -320,5 +325,57 @@ export const SortButton = styled.button`
     @media (max-width: 550px) {
     margin-left: 0px;
     margin-top: 10px;
+  }
+`;
+
+export const GameImageWrapper = styled.div`
+  position: relative;
+  display: inline-block;
+  margin-bottom: 10px;
+  border-radius: 20px;
+  overflow: hidden;
+  width: 100%;
+  height: auto;
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+export const GameImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+export const PlayIcon = styled(FaPlayCircle)`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  fill: #fff;
+  width: 70px;
+  height: 70px;
+  transition: all 0.3s ease;
+  opacity: 0;
+`;
+
+export const GameImageOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+`;
+
+export const GameImageContainer = styled.div`
+  position: relative;
+  &:hover ${PlayIcon} {
+    opacity: 1;
+  }
+  &:hover ${GameImageOverlay} {
+    opacity: 1;
   }
 `;

@@ -13,7 +13,135 @@ export const LogoutButton = styled.button`
   margin-left: 10px;
   width: 90px;
   &:hover {
-    background-color: #0026b3;
+    background-color: rgb(0, 123, 255);
+  }
+`;
+
+export const SearchInput = styled.input`
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  margin-right: 10px;
+  margin-left: 10px;
+  width: 200px;
+  @media (max-width: 1010px) {
+    width: 100% !important;
+    margin: 20px;
+    flex-direction: column;
+  }
+`;
+
+export const SearchContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  @media (max-width: 550px) {
+    width: 300px !important;
+    flex-direction: column;
+  }
+`;
+
+export const SearchMobile = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  @media (max-width: 1010px) {
+    width: 100% !important;
+    margin: 20px;
+    flex-direction: column;
+  }
+`;
+
+export const SortButton = styled.button`
+  padding: 8px 12px;
+  border-radius: 4px;
+    font-weight: bold;
+  word-break: break-word;
+    @media (max-width: 550px) {
+    margin-left: 0px;
+    margin-top: 10px;
+  }
+  @media (max-width: 1010px) {
+    width: 100% !important;
+    margin: 0px;
+    margin-top: 20px;
+  }
+  &:hover {
+    background-color: rgb(0, 123, 255);
+  }
+`;
+
+export const DefaultSortButton = styled.button`
+  padding: 8px 12px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+  margin-left: 10px;
+  word-break: break-word;
+    @media (max-width: 1010px) {
+    width: 100% !important;
+    margin: 0px;
+    margin-top: 20px;
+  }
+  &:hover {
+    background-color: rgb(0, 123, 255);
+  }
+`;
+
+export const BoxBtns = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  @media (max-width: 1180px) {
+    display: none;
+  }
+`;
+
+export const SearchContainerBusca = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0px 0px 20px 20px;
+  @media (max-width: 1010px) {
+    width: 100% !important;
+    margin: 0px;
+    margin-top: 20px;
+  }
+`;
+
+export const GenreSelect = styled.select`
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  width: 200px;
+  @media (max-width: 1010px) {
+    width: 100% !important;
+    margin: 0px;
+    margin-top: 20px;
+  }
+`;
+
+export const Button = styled.button`
+  width: 150px;
+  margin-right: 20px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-weight: bold;
+  word-break: break-word;
+  @media (max-width: 1010px) {
+    width: 100% !important;
+    margin: 0px;
+    margin-top: 20px;
+  }
+  &:hover {
+    background-color: rgb(0, 123, 255);
   }
 `;
 

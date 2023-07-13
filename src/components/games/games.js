@@ -1,13 +1,48 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FavoriteIcon, RatingContainer, StarIcon, GamesContainer, GamesTitle, SearchContainer, DefaultSortButton, ContainerLoader, GifLoader, SearchInput, GenreSelect, Loader, ErrorMessage, NoResultsMessage, ErrorConteiner, GamesGrid, GameCard, GameImage, RefreshButton,GameTitle, GameDescription, GameDetails, GameDetail, GameLink, Button, SortButton, ErrorAviso, SearchContainerBusca } from './styled';
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import GamesContext from '../../contexts/GamesContext';
 import { toast } from 'react-toastify';
-import LoaderGif from '../../assets/loaders/loader.gif';
 import useGames from '../../hooks/api/useGames';
 import { useNavigate } from 'react-router-dom';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
+import {
+  YTiframe,
+  FavoriteIcon,
+  RatingContainer,
+  StarIcon,
+  GamesContainer,
+  GamesTitle,
+  SearchContainer,
+  DefaultSortButton,
+  ContainerLoader,
+  GifLoader,
+  SearchInput,
+  GenreSelect,
+  Loader,
+  ErrorMessage,
+  NoResultsMessage,
+  ErrorConteiner,
+  GamesGrid,
+  GameCard,
+  GameImage,
+  RefreshButton,
+  GameTitle,
+  GameDescription,
+  GameDetails,
+  GameDetail,
+  GameLink,
+  Button,
+  SortButton,
+  ErrorAviso,
+  SearchContainerBusca,
+  PlayIcon,
+  GameImageContainer,
+  GameImageWrapper,
+  GameImageOverlay
+} from './styled';
+import { FaRegWindowClose } from 'react-icons/fa';
+import LoaderGif from '../../assets/loaders/loader.gif';
 import a404 from '../../assets/loaders/404.gif';
 
 export default function Games() {
@@ -26,7 +61,12 @@ export default function Games() {
   const [defaultSorting, setDefaultSorting] = useState(false);
   const [isFirstRender, setIsFirstRender] = useState(true);
   const [isSortingAlphabetically, setIsSortingAlphabetically] = useState(true);
-  
+  const [selectedGame, setSelectedGame] = useState(null);
+  const [showVideo, setShowVideo] = useState(false);
+  const [videoId, setVideoId] = useState('');
+  const [imageHeight, setImageHeight] = useState(0);
+  const imageRef = useRef(null);
+
   const firebaseConfig = {
     apiKey: "AIzaSyCmrOKFfM9TEqNcDmgYfytHrcOGg3lN2uY",
     authDomain: "appmasters-8aa8e.firebaseapp.com",
@@ -42,12 +82,18 @@ export default function Games() {
   }, [searchQuery, selectedGenre, gamesData, showFavorites, favorites]);
 
   useEffect(() => {
+    if (imageRef.current) {
+      setImageHeight(imageRef.current.offsetHeight);
+    }
+  }, []);
+
+  useEffect(() => {
     setLoading(true);
     fetchData();
     const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
       setUser(user);
       if (user) {
-        toast(`Bem-vindo 😍, ${user.displayName} !`);
+        toast(`Bem-vindo 😍, ${user.displayName}!`);
       }
     });
     return () => unsubscribe();
@@ -55,10 +101,73 @@ export default function Games() {
 
   useEffect(() => {
     if (isFirstRender) {
-      sortedGames = [...gamesData];
+      setFilteredGames(gamesData);
       setIsFirstRender(false);
     }
-  }, [isFirstRender, filteredGames]);
+  }, [isFirstRender, gamesData]);
+
+  useEffect(() => {
+    const fetchYouTubeVideo = async () => {
+      if (selectedGame) {
+        const game = gamesData.find((game) => game.id === selectedGame);
+        if (game) {
+          const videoId = await searchYouTubeVideo(game.title);
+          setVideoId(videoId);
+          setShowVideo(true);
+        }
+      } else {
+        setShowVideo(false);
+      }
+    };
+
+    fetchYouTubeVideo();
+  }, [selectedGame]);
+
+  const searchYouTubeVideo = async (title) => {
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/youtube/v3/search?q=${encodeURIComponent(
+          title + ' Official Game'
+        )}&part=snippet&maxResults=1&key=AIzaSyB_6iVM4DsObyOdDLl81XW0dgh2eEzcYgQ`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        const videoId = data.items[0].id.videoId;
+        return videoId;
+      } else {
+        handleCloseVideo();
+        const errorData = await response.json();
+        const errorMessage = errorData.error.message;
+        handleAPIError(response.status, errorMessage);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar vídeo no YouTube:', error);
+      toast.error('Ocorreu um erro ao buscar o vídeo no YouTube. Por favor, tente novamente mais tarde.');
+    }
+  };
+  
+  const handleAPIError = (statusCode, errorMessage) => {
+    switch (statusCode) {
+      case 400:
+        toast.error('Solicitação inválida. Verifique os parâmetros da sua solicitação.');
+        break;
+      case 401:
+        toast.error('Não autorizado. Verifique se você possui as permissões corretas.');
+        break;
+      case 403:
+        toast.error('O Site excedeu a cota diaria da API do YouTube sponsor me 💖.');
+        break;
+      case 404:
+        toast.error('Recurso não encontrado. Verifique se o vídeo existe e está disponível.');
+        break;
+      case 500:
+        toast.error('Erro interno do servidor. Por favor, tente novamente mais tarde.');
+        break;
+      default:
+        toast.error(`Ocorreu um erro (${statusCode}): ${errorMessage}`);
+        break;
+    }
+  };
 
   const fetchData = async () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -67,9 +176,7 @@ export default function Games() {
       firebase.initializeApp(firebaseConfig);
       const response = await Promise.race([
         getGames(),
-        new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Timeout')), 5000)
-        ),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000)),
       ]);
       setGamesData(response);
       setLoading(false);
@@ -144,14 +251,14 @@ export default function Games() {
 
   const filterGames = () => {
     let filtered = [];
-  
+
     if (showFavorites) {
       filtered = gamesData.filter((game) => favorites.includes(game.id));
-  
+
       if (selectedGenre !== '') {
         filtered = filtered.filter((game) => game.genre === selectedGenre);
       }
-  
+
       if (searchQuery !== '') {
         const query = searchQuery.toLowerCase();
         filtered = filtered.filter((game) =>
@@ -172,9 +279,9 @@ export default function Games() {
         }
       }
     }
-  
+
     setFilteredGames(filtered);
-  
+
     if (isSortingAlphabetically) {
       setSorting('');
       setFilteredGames((prevFilteredGames) => {
@@ -207,60 +314,60 @@ export default function Games() {
     }
   };
 
-const handleToggleFavorite = async (gameId) => {
-  const isFavorite = favorites.includes(gameId);
-  const updatedFavorites = isFavorite
-    ? favorites.filter((id) => id !== gameId)
-    : [...favorites, gameId];
-  const user = firebase.auth().currentUser;
-  if (user) {
-    try {
-      const userRef = firebase.firestore().collection('users').doc('OixewtYxzSFIz8SkoKzx');
-      await userRef.update({ favorites: updatedFavorites });
-      setFavorites(updatedFavorites);
-      setFilteredGames((prevFilteredGames) => {
-        const updatedGames = prevFilteredGames.map((game) => {
-          if (game.id === gameId) {
-            return { ...game, isFavorite: !isFavorite };
-          }
-          return game;
+  const handleToggleFavorite = async (gameId) => {
+    const isFavorite = favorites.includes(gameId);
+    const updatedFavorites = isFavorite
+      ? favorites.filter((id) => id !== gameId)
+      : [...favorites, gameId];
+    const user = firebase.auth().currentUser;
+    if (user) {
+      try {
+        const userRef = firebase.firestore().collection('users').doc('OixewtYxzSFIz8SkoKzx');
+        await userRef.update({ favorites: updatedFavorites });
+        setFavorites(updatedFavorites);
+        setFilteredGames((prevFilteredGames) => {
+          const updatedGames = prevFilteredGames.map((game) => {
+            if (game.id === gameId) {
+              return { ...game, isFavorite: !isFavorite };
+            }
+            return game;
+          });
+          return [...updatedGames];
         });
-        return [...updatedGames];
-      });
-      if (isFavorite) {
-        toast.info('Game removido dos favoritos.');
-      } else {
-        toast.success('Game adicionado aos favoritos.');
+        if (isFavorite) {
+          toast.info('Game removido dos favoritos.');
+        } else {
+          toast.success('Game adicionado aos favoritos.');
+        }
+      } catch (error) {
+        toast.error('Ocorreu um erro ao atualizar os favoritos.');
       }
-    } catch (error) {
-      toast.error('Ocorreu um erro ao atualizar os favoritos.');
+    } else {
+      navigate('/auth/');
+      toast.error('Realize o login para adicionar favoritos.');
     }
-  } else {
-    navigate('/auth/');
-    toast.error('Realize o login para adicionar favoritos.');
-  }
-};
+  };
 
   const handleToggleShowFavorites = () => {
     setShowFavorites(!showFavorites);
     setSelectedGenre('');
     setSorting('');
-    if(!showFavorites){
+    if (!showFavorites) {
       setIsSortingAlphabetically(false);
     }
   };
 
   const handleRateGame = async (gameId, rating) => {
     const user = firebase.auth().currentUser;
-    
+
     if (user) {
       const userRef = firebase.firestore().collection('users').doc('OixewtYxzSFIz8SkoKzx');
       const userSnapshot = await userRef.get();
-      
+
       if (userSnapshot.exists) {
         const userData = userSnapshot.data();
         const previousRating = userData.ratings && userData.ratings[gameId];
-        
+
         let updatedRatings;
         if (previousRating === rating) {
           delete userData.ratings[gameId];
@@ -270,7 +377,7 @@ const handleToggleFavorite = async (gameId) => {
           updatedRatings = { ...userData.ratings, [gameId]: rating };
           toast.success('Game avaliado.');
         }
-        
+
         await userRef.update({ ratings: updatedRatings });
         setRatings(updatedRatings);
       }
@@ -305,13 +412,19 @@ const handleToggleFavorite = async (gameId) => {
 
   const getUniqueGenres = () => {
     if (gamesData !== undefined) {
-      const genres= gamesData.map((game) => game.genre);
+      const genres = gamesData.map((game) => game.genre);
       return [...new Set(genres)];
     }
     return [];
   };
 
+  const handleCloseVideo = () => {
+    setSelectedGame(null);
+    setShowVideo(false);
+  };
+
   const uniqueGenres = getUniqueGenres();
+
   return (
     <GamesContainer>
       <ContainerLoader>
@@ -324,23 +437,26 @@ const handleToggleFavorite = async (gameId) => {
         ></lord-icon>
         <GamesTitle>Master👾Games</GamesTitle>
         {user ? (
-          <GameTitle>Olá novamente {user.displayName}, divirta-se!</GameTitle>
+          <GameTitle>Olá {user.displayName}, divirta-se!</GameTitle>
         ) : (
           <GameTitle>Olá Visitante! 💖</GameTitle>
         )}
       </ContainerLoader>
-      {user ?      
-      <SearchContainer>
-        <Button onClick={handleToggleShowFavorites}>
-          {showFavorites ? 'Todos' : 'Favoritos'}
-        </Button>
-        <SortButton onClick={handleToggleSorting}>
-          Ordenar por Avaliação {sorting === 'asc' ? '↑' : '↓'}
-        </SortButton>
-        <DefaultSortButton onClick={handleToggleDefaultSorting}>
-          Ordenar por {!defaultSorting ? 'Padrão' : 'Alfabética'}
-        </DefaultSortButton>
-      </SearchContainer> : <></>}
+      {user ? (
+        <SearchContainer>
+          <Button onClick={handleToggleShowFavorites}>
+            {showFavorites ? 'Todos' : 'Favoritos'}
+          </Button>
+          <SortButton onClick={handleToggleSorting}>
+            Ordenar por Avaliação {sorting === 'asc' ? '↑' : '↓'}
+          </SortButton>
+          <DefaultSortButton onClick={handleToggleDefaultSorting}>
+            Ordenar por {!defaultSorting ? 'Padrão' : 'Alfabética'}
+          </DefaultSortButton>
+        </SearchContainer>
+      ) : (
+        <></>
+      )}
       <SearchContainerBusca>
         <SearchInput
           type="text"
@@ -349,8 +465,14 @@ const handleToggleFavorite = async (gameId) => {
           value={searchQuery}
           onChange={handleSearch}
         />
-        <GenreSelect name="buscaSelect" value={selectedGenre} onChange={handleGenreSelect}>
-          <option key={''} value="">Todos os gêneros</option>
+        <GenreSelect
+          name="buscaSelect"
+          value={selectedGenre}
+          onChange={handleGenreSelect}
+        >
+          <option key={''} value="">
+            Todos os gêneros
+          </option>
           {uniqueGenres.map((genre) => (
             <option key={genre} value={genre}>
               {genre}
@@ -377,9 +499,35 @@ const handleToggleFavorite = async (gameId) => {
         <GamesGrid>
           {sortedGames.map((game) => (
             <GameCard key={game.id}>
-              <GameImage src={game.thumbnail} alt={game.title} />
+            {selectedGame === game.id && showVideo ? (
+              <></>
+            ) : (
+              <GameImageContainer onClick={() => setSelectedGame(game.id)}>
+                <GameImageWrapper>
+                  <GameImage
+                    ref={imageRef}
+                    src={game.thumbnail}
+                    alt={game.title}
+                  />
+                  <GameImageOverlay></GameImageOverlay>
+                  <PlayIcon />
+                </GameImageWrapper>
+              </GameImageContainer>
+            )}
+              {selectedGame === game.id && showVideo && (
+                <div>
+                  <YTiframe
+                    src={`https://www.youtube.com/embed/${videoId}`}
+                    title="YouTube Game Video"
+                    width="100%"
+                    height={imageHeight}
+                    allowFullScreen
+                  ></YTiframe>
+                  <FaRegWindowClose onClick={() => handleCloseVideo()} />
+                </div>
+              )}
               <GameTitle>
-                {game.title}  -  {game.genre}
+                {game.title} - {game.genre}
                 <div>
                   <RatingContainer>
                     <FavoriteIcon
