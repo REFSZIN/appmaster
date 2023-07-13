@@ -82,12 +82,6 @@ export default function Games() {
   }, [searchQuery, selectedGenre, gamesData, showFavorites, favorites]);
 
   useEffect(() => {
-    if (imageRef.current) {
-      setImageHeight(imageRef.current.offsetHeight);
-    }
-  }, []);
-
-  useEffect(() => {
     setLoading(true);
     fetchData();
     const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
@@ -128,7 +122,7 @@ export default function Games() {
       const response = await fetch(
         `https://www.googleapis.com/youtube/v3/search?q=${encodeURIComponent(
           title + ' Official Game'
-        )}&part=snippet&maxResults=1&key=AIzaSyB_6iVM4DsObyOdDLl81XW0dgh2eEzcYgQ`
+        )}&part=snippet&maxResults=1&key=AIzaSyDTDvecZqYzHKjU2NNnuV3EXIqA0V_6UWU`
       );
       if (response.ok) {
         const data = await response.json();
@@ -155,7 +149,7 @@ export default function Games() {
         toast.error('Não autorizado. Verifique se você possui as permissões corretas.');
         break;
       case 403:
-        toast.error('O Site excedeu a cota diaria da API do YouTube sponsor me 💖.');
+        toast.error('Excedemos a cota diaria API Data do YouTube.');
         break;
       case 404:
         toast.error('Recurso não encontrado. Verifique se o vídeo existe e está disponível.');
@@ -372,7 +366,7 @@ export default function Games() {
         if (previousRating === rating) {
           delete userData.ratings[gameId];
           updatedRatings = { ...userData.ratings };
-          toast.success('Avaliação retirada.');
+          toast.info('Avaliação retirada.');
         } else {
           updatedRatings = { ...userData.ratings, [gameId]: rating };
           toast.success('Game avaliado.');
@@ -422,6 +416,12 @@ export default function Games() {
     setSelectedGame(null);
     setShowVideo(false);
   };
+
+  useEffect(() => {
+    if (imageRef.current) {
+      setImageHeight(imageRef.current.offsetHeight);
+    }
+  }, [selectedGame, filterGames]);
 
   const uniqueGenres = getUniqueGenres();
 
