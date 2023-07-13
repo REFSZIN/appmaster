@@ -181,7 +181,7 @@ export default function Header() {
   return (
     <HeaderContainer>
       <LogoContainer>
-        <Link to="/">
+        <Link to="/" onClick={handleScrollToTop} title={ showButton ? "Scroll to Top" : "MastersGames"}>
           <LogoImg src="https://www.appmasters.io/favicon.png" alt="Logo" />
         </Link>
       </LogoContainer>

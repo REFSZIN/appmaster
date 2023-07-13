@@ -303,7 +303,7 @@ export const GameLink = styled.a`
 
 export const Button = styled.button`
   width: 150px;
-  margin-right: 20px;
+  margin-right: 10px;
   padding: 8px 12px;
   border-radius: 4px;
   font-weight: bold;

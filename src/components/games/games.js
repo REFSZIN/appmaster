@@ -84,6 +84,8 @@ export default function Games() {
   useEffect(() => {
     setLoading(true);
     fetchData();
+    fetchFavorites();
+    fetchRatings();
     const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
       setUser(user);
       if (user) {
@@ -94,6 +96,8 @@ export default function Games() {
   }, []);
 
   useEffect(() => {
+    fetchFavorites();
+    fetchRatings();
     if (isFirstRender) {
       setFilteredGames(gamesData);
       setIsFirstRender(false);
@@ -510,12 +514,12 @@ export default function Games() {
                     alt={game.title}
                   />
                   <GameImageOverlay></GameImageOverlay>
-                  <PlayIcon />
+                  <PlayIcon  title="Abrir Video"/>
                 </GameImageWrapper>
               </GameImageContainer>
             )}
               {selectedGame === game.id && showVideo && (
-                <div>
+                <GameImageContainer>
                   <YTiframe
                     src={`https://www.youtube.com/embed/${videoId}`}
                     title="YouTube Game Video"
@@ -524,7 +528,7 @@ export default function Games() {
                     allowFullScreen
                   ></YTiframe>
                   <FaRegWindowClose onClick={() => handleCloseVideo()} />
-                </div>
+                </GameImageContainer>
               )}
               <GameTitle>
                 {game.title} - {game.genre}
@@ -533,6 +537,7 @@ export default function Games() {
                     <FavoriteIcon
                       onClick={() => handleToggleFavorite(game.id)}
                       className={favorites.includes(game.id) ? 'favorite' : ''}
+                      title={favorites.includes(game.id) ? 'Desfavoritar' : 'Favoritar'}
                     >
                       ♡
                     </FavoriteIcon>
@@ -541,6 +546,7 @@ export default function Games() {
                         key={index}
                         onClick={() => handleRateGame(game.id, index + 1)}
                         className={index < ratings[game.id] ? 'rated' : ''}
+                        title={index === ratings[game.id] - 1 ? 'Retirar avaliação' : `Avaliar com ${index + 1} estrelas`}
                       >
                         ★
                       </StarIcon>

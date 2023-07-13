@@ -15,8 +15,13 @@ export default function Footer() {
           </SocialIcon>
         </SocialIconsContainer>
       </SocialContainer>
-      <Logos src='https://www.appmasters.io/favicon.png' alt='a'></Logos>
+      <SocialIcon href='https://www.appmasters.io/' target='_blank' title="AppMasters">
+        <Logos src='https://www.appmasters.io/favicon.png' alt='a'/>
+      </SocialIcon>
       <LocationContainer>
+        <div>
+          <p>© { new Date().getFullYear() } Master👾Games.</p>
+        </div>
       </LocationContainer>
     </FooterContainer>
   );

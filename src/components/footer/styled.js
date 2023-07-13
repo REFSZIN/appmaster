@@ -39,7 +39,7 @@ export const Logos = styled.img`
 
 export const SocialContainer = styled.div`
   flex: 1;
-  margin-right: 30px;
+  margin-right: 100px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -75,11 +75,14 @@ export const SocialIcon = styled.a`
 
 export const LocationContainer = styled.div`
   flex: 1;
-  margin-bottom: 20px;
+  margin-bottom: 0px;
+  margin-left: 100px;
+  word-break: break-word !important;
   @media (max-width: 900px) {
+    margin-left: 0px;
     order: 3;
     margin-top: 20px;
-    display: none !important;
+    word-break: break-word !important;
   }
 `;
 
