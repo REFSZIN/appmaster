@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { YTiframe, FavoriteIcon, RatingContainer, StarIcon, GamesContainer, GamesTitle, SearchContainer, DefaultSortButton, ContainerLoader, GifLoader, SearchInput, GenreSelect, Loader, ErrorMessage, NoResultsMessage, ErrorConteiner, GamesGrid, GameCard, GameImage, RefreshButton, GameTitle, GameDescription, GameDetails, GameDetail, GameLink, Button, SortButton, ErrorAviso, SearchContainerBusca, PlayIcon, GameImageContainer, GameImageWrapper, GameImageOverlay }from './styled';
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import useGames from '../../hooks/api/useGames';
 import UserContext from '../../contexts/UserContext';
 import GamesContext from '../../contexts/GamesContext';
@@ -13,27 +13,15 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 
 export default function Games() {
-  const { gamesData, errormsg, setGamesData } = useContext(GamesContext);
+  const {gamesData,setGamesData,filteredGames,setFilteredGames,favorites,setFavorites,showFavorites,setShowFavorites,ratings,setRatings,sorting,setSorting,user,setUser,defaultSorting,setDefaultSorting,isFirstRender,setIsFirstRender,selectedGame,setSelectedGame,showVideo,setShowVideo,videoId,setVideoId,imageHeight,setImageHeight,imageRef,errormsg} = useContext(GamesContext);
+  const { setUserData } = useContext(UserContext);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('');
-  const [filteredGames, setFilteredGames] = useState([]);
-  const [favorites, setFavorites] = useState([]);
-  const [showFavorites, setShowFavorites] = useState(false);
   const { getGames } = useGames();
-  const [ratings, setRatings] = useState({});
-  const [sorting, setSorting] = useState('');
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
-  const [defaultSorting, setDefaultSorting] = useState(false);
-  const [isFirstRender, setIsFirstRender] = useState(true);
   const [isSortingAlphabetically, setIsSortingAlphabetically] = useState(true);
-  const [selectedGame, setSelectedGame] = useState(null);
-  const [showVideo, setShowVideo] = useState(false);
-  const [videoId, setVideoId] = useState('');
-  const [imageHeight, setImageHeight] = useState(0);
-  const imageRef = useRef(null);
-  const { setUserData } = useContext(UserContext);
+  
   const firebaseConfig = {
     apiKey: "AIzaSyCmrOKFfM9TEqNcDmgYfytHrcOGg3lN2uY",
     authDomain: "appmasters-8aa8e.firebaseapp.com",

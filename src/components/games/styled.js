@@ -178,6 +178,7 @@ export const GamesGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, minmax(420px, 1fr));
   padding: 20px;
+  
   @media (max-width: 1200px) {
     grid-template-columns: repeat(2, 1fr);
   }

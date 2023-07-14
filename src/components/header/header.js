@@ -1,6 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import { ScrollToTopButton, NavItem, LogoImg, LogoContainer, MenuHamburg, HeaderContainer, LogoutButton, SearchContainer, SortButton, DefaultSortButton,SearchContainerBusca, SearchInput, GenreSelect, Button, BoxBtns, SearchMobile,BtnsMobile } from './styled';
+import {
+  ScrollToTopButton,
+  NavItem,
+  LogoImg,
+  LogoContainer,
+  MenuHamburg,
+  HeaderContainer,
+  LogoutButton,
+  SearchContainer,
+  SortButton,
+  SearchContainerBusca,
+  GenreSelect,
+  Button,
+  BoxBtns,
+  SearchMobile,
+  BtnsMobile,
+} from './styled';
 import React, { useContext, useState, useEffect } from 'react';
 import { FaAlignRight, FaArrowUp, FaUser, FaUsersSlash } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
@@ -17,7 +33,8 @@ import 'firebase/compat/auth';
 
 export default function Header() {
   const { userData, setUserData } = useContext(UserContext);
-  const { gamesData } = useContext(GamesContext);
+  const {gamesData,setFilteredGames,favorites,showFavorites,setShowFavorites,sorting,setSorting,ratings,filteredGames
+  } = useContext(GamesContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [showScrollButton, setShowScrollButton] = useState(false);
@@ -25,14 +42,9 @@ export default function Header() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('');
-  const [defaultSorting, setDefaultSorting] = useState(false);
-  const [showFavorites, setShowFavorites] = useState(false);
-  const [sorting, setSorting] = useState('');
   const [uniqueGenres, setUniqueGenres] = useState([]);
-  const [filteredGames, setFilteredGames] = useState([]);
   const [isSortingAlphabetically, setIsSortingAlphabetically] = useState(false);
-  const [favorites] = useState([]);
-
+  const [isSearching, setIsSearching] = useState(false);
   const handleLogout = async () => {
     try {
       await firebase.auth().signOut();
@@ -56,20 +68,15 @@ export default function Header() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleSearch = (event) => {
-    setSearchQuery(event.target.value);
-  };
 
   const handleGenreSelect = (event) => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setSelectedGenre(event.target.value);
   };
 
-  const handleToggleDefaultSorting = () => {
-    setDefaultSorting(!defaultSorting);
-    setIsSortingAlphabetically(true);
-  };
 
   const handleToggleShowFavorites = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setShowFavorites(!showFavorites);
     setSelectedGenre('');
     setSorting('');
@@ -79,6 +86,7 @@ export default function Header() {
   };
 
   const handleToggleSorting = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setSorting(sorting === 'asc' ? 'desc' : 'asc');
     setIsSortingAlphabetically(false);
   };
@@ -91,22 +99,28 @@ export default function Header() {
         setShowScrollButton(false);
       }
     };
-    const handle = () => {
+
+    const handleShowButton = () => {
       if (window.scrollY > 500) {
         setShowButton(true);
       } else {
         setShowButton(false);
       }
-    }
+    };
+
     window.addEventListener('scroll', handleScroll);
-    window.addEventListener('scroll', handle);
+    window.addEventListener('scroll', handleShowButton);
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('scroll', handle);
+      window.removeEventListener('scroll', handleShowButton);
     };
   }, []);
 
   const filterGames = () => {
+      if (isSearching) {
+    return;
+  }
     let filtered = [];
 
     if (showFavorites) {
@@ -144,7 +158,7 @@ export default function Header() {
       filtered.sort((a, b) => a.title.localeCompare(b.title));
     }
   };
-  
+
   useEffect(() => {
     const getUniqueGenres = () => {
       if (gamesData !== undefined) {
@@ -159,57 +173,83 @@ export default function Header() {
 
   useEffect(() => {
     filterGames();
+    
   }, [searchQuery, selectedGenre, gamesData, showFavorites, favorites]);
+
+  let sortedGames = [...filteredGames];
+
+  if (sorting === 'asc') {
+    sortedGames.sort((a, b) => {
+      const ratingA = ratings[a.id] || 0;
+      const ratingB = ratings[b.id] || 0;
+      return ratingA - ratingB;
+    });
+  } 
+  else if (sorting === 'desc') {
+    sortedGames.sort((a, b) => {
+      const ratingA = ratings[a.id] || 0;
+      const ratingB = ratings[b.id] || 0;
+      return ratingB - ratingA;
+    });
+  } else {
+    sortedGames = [...filteredGames];
+  }
 
   return (
     <HeaderContainer>
       <LogoContainer>
-        <Link to="/" onClick={handleScrollToTop} title={ showButton ? "Scroll to Top" : "MastersGames"}>
+        <Link to="/" onClick={handleScrollToTop} title={showButton ? "Scroll to Top" : "MastersGames"}>
           <LogoImg src="https://www.appmasters.io/favicon.png" alt="Logo" />
         </Link>
       </LogoContainer>
       {showButton && (
-      <>        
-      {userData && (
-        <BoxBtns sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-          <SearchContainer>
-            <Button onClick={handleToggleShowFavorites}>
-              {showFavorites ? 'Todos' : 'Favoritos'}
-            </Button>
-            <SortButton onClick={handleToggleSorting}>
-              Ordenar por Avaliação {sorting === 'asc' ? '↑' : '↓'}
-            </SortButton>
-            <DefaultSortButton onClick={handleToggleDefaultSorting}>
-              Ordenar por {!defaultSorting ? 'Padrão' : 'Alfabética'}
-            </DefaultSortButton>
-          </SearchContainer>
-        </BoxBtns>
-      )}
-        <BoxBtns>
-          <SearchContainerBusca>
-            <SearchInput
-              type="text"
-              name="busca"
-              placeholder="Buscar por título"
-              value={searchQuery}
-              onChange={handleSearch}
-            />
-            <GenreSelect
-              name="buscaSelect"
-              value={selectedGenre}
-              onChange={handleGenreSelect}>
-              <option key={''} value="">
-                Todos os gêneros
-              </option>
-              {uniqueGenres.map((genre) => (
-                <option key={genre} value={genre}>
-                  {genre}
+        <>
+          {userData && (
+            <BoxBtns sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+              <SearchContainer>
+              <GenreSelect
+                name="buscaSelect"
+                value={selectedGenre}
+                onChange={handleGenreSelect}
+              >
+                <option key={''} value="">
+                  Todos os gêneros
                 </option>
-              ))}
-            </GenreSelect>
-          </SearchContainerBusca>
-        </BoxBtns>
-      </>
+                {uniqueGenres.map((genre) => (
+                  <option key={genre} value={genre}>
+                    {genre}
+                  </option>
+                ))}
+              </GenreSelect>
+                <Button onClick={handleToggleShowFavorites} >
+                  {showFavorites ? 'Todos' : 'Favoritos'}
+                </Button>
+                <SortButton onClick={handleToggleSorting }>
+                  Ordenar por Avaliação {sorting === 'asc' ? '↑' : '↓'}
+                </SortButton>
+              </SearchContainer>
+            </BoxBtns>
+          )}
+          <BoxBtns>
+            <SearchContainerBusca>
+              {!userData?         
+                <GenreSelect
+                  name="buscaSelect"
+                  value={selectedGenre}
+                  onChange={handleGenreSelect}
+                >
+                <option key={''} value="">
+                  Todos os gêneros
+                </option>
+                {uniqueGenres.map((genre) => (
+                  <option key={genre} value={genre}>
+                    {genre}
+                  </option>
+                ))}
+              </GenreSelect>: <></>}
+            </SearchContainerBusca>
+          </BoxBtns>
+        </>
       )}
       <MenuHamburg>
         {showScrollButton && (
@@ -270,7 +310,7 @@ export default function Header() {
           {window.innerWidth < 1180 && showButton && (
             <MenuItem>
               <SearchMobile>
-              <GenreSelect
+                <GenreSelect
                   name="buscaSelect"
                   value={selectedGenre}
                   onChange={handleGenreSelect}
@@ -285,50 +325,43 @@ export default function Header() {
                     </option>
                   ))}
                 </GenreSelect>
-                <SearchInput
-                  type="text"
-                  name="busca"
-                  placeholder="Buscar por título"
-                  value={searchQuery}
-                  onChange={handleSearch}
-                  onClick={(e) => e.stopPropagation()}
-                />
-                {userData ? <>
-                <Button onClick={handleToggleShowFavorites}>
-                {showFavorites ? 'Todos' : 'Favoritos'}
-                </Button>
-                <SortButton onClick={handleToggleSorting}>
-                Ordenar por Avaliação {sorting === 'asc' ? '↑' : '↓'}
-                </SortButton>
-                <DefaultSortButton onClick={handleToggleDefaultSorting}>
-                Ordenar por {!defaultSorting ? 'Padrão' : 'Alfabética'}
-                </DefaultSortButton>
-                </> : <></>}
+                {userData ? (
+                  <>
+                    <Button onClick={handleToggleShowFavorites}>
+                      {showFavorites ? 'Todos' : 'Favoritos'}
+                    </Button>
+                    <SortButton onClick={handleToggleSorting}>
+                      Ordenar por Avaliação {sorting === 'asc' ? '↑' : '↓'}
+                    </SortButton>
+                  </>
+                ) : (
+                  <></>
+                )}
               </SearchMobile>
             </MenuItem>
           )}
           <MenuItem>
-          <BtnsMobile>
-          <NavItem>
-              {userData ? (
-                <BtnsMobile>
-                  <LogoutButton onClick={handleLogout}>
-                    <FaUsersSlash />
-                    Sair
-                  </LogoutButton>
-                </BtnsMobile>
-              ) : (
-                <BtnsMobile>
-                  <Link to="/auth/">
-                    <LogoutButton>
-                      <FaUser />
-                      Login
+            <BtnsMobile>
+              <NavItem>
+                {userData ? (
+                  <BtnsMobile>
+                    <LogoutButton onClick={handleLogout}>
+                      <FaUsersSlash />
+                      Sair
                     </LogoutButton>
-                  </Link>
-                </BtnsMobile>
-              )}
-            </NavItem>
-          </BtnsMobile>
+                  </BtnsMobile>
+                ) : (
+                  <BtnsMobile>
+                    <Link to="/auth/">
+                      <LogoutButton>
+                        <FaUser />
+                        Login
+                      </LogoutButton>
+                    </Link>
+                  </BtnsMobile>
+                )}
+              </NavItem>
+            </BtnsMobile>
           </MenuItem>
         </Menu>
       </MenuHamburg>

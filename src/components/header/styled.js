@@ -138,6 +138,7 @@ export const GenreSelect = styled.select`
   border-radius: 4px;
   border: 1px solid #ccc;
   width: 200px;
+  margin-right: 10px;
   @media (max-width: 1180px) {
     width: 100% !important;
     margin: 0px;
