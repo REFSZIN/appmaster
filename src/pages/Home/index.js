@@ -190,8 +190,8 @@ export default function Home() {
     <Main>
       <Header/>
       <Games/>
-      <Footer/>
       <Canvas ref={threeCanvasRef}></Canvas>
+      <Footer/>
     </Main>
   );
 }

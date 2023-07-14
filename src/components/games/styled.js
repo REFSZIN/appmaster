@@ -206,8 +206,8 @@ export const GameCard = styled.div`
   margin: 20px;
   text-shadow: 0 0 1px rgb(187, 0, 255), 0 0 2px rgb(75, 5, 83),
     0 0 4px #0fa, 0 0 1px #0fa, 0 0 11px rgb(95, 11, 97);
-    border-radius: 48px;
-    background-color: rgba(0,0,0,0.5);
+  border-radius: 48px;
+  background-color: rgba(0,0,0,0.5);
   box-shadow: 6px 6px 12px #181A1B;
   &:hover {
     box-shadow: 0px 0px 20px 1px #007bff;;

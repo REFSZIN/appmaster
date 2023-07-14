@@ -1,50 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { YTiframe, FavoriteIcon, RatingContainer, StarIcon, GamesContainer, GamesTitle, SearchContainer, DefaultSortButton, ContainerLoader, GifLoader, SearchInput, GenreSelect, Loader, ErrorMessage, NoResultsMessage, ErrorConteiner, GamesGrid, GameCard, GameImage, RefreshButton, GameTitle, GameDescription, GameDetails, GameDetail, GameLink, Button, SortButton, ErrorAviso, SearchContainerBusca, PlayIcon, GameImageContainer, GameImageWrapper, GameImageOverlay }from './styled';
 import React, { useState, useEffect, useContext, useRef } from 'react';
+import useGames from '../../hooks/api/useGames';
+import UserContext from '../../contexts/UserContext';
 import GamesContext from '../../contexts/GamesContext';
 import { toast } from 'react-toastify';
-import useGames from '../../hooks/api/useGames';
-import { useNavigate } from 'react-router-dom';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
-import {
-  YTiframe,
-  FavoriteIcon,
-  RatingContainer,
-  StarIcon,
-  GamesContainer,
-  GamesTitle,
-  SearchContainer,
-  DefaultSortButton,
-  ContainerLoader,
-  GifLoader,
-  SearchInput,
-  GenreSelect,
-  Loader,
-  ErrorMessage,
-  NoResultsMessage,
-  ErrorConteiner,
-  GamesGrid,
-  GameCard,
-  GameImage,
-  RefreshButton,
-  GameTitle,
-  GameDescription,
-  GameDetails,
-  GameDetail,
-  GameLink,
-  Button,
-  SortButton,
-  ErrorAviso,
-  SearchContainerBusca,
-  PlayIcon,
-  GameImageContainer,
-  GameImageWrapper,
-  GameImageOverlay
-} from './styled';
 import { FaRegWindowClose } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import LoaderGif from '../../assets/loaders/loader.gif';
 import a404 from '../../assets/loaders/404.gif';
-import UserContext from '../../contexts/UserContext';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 
 export default function Games() {
   const { gamesData, errormsg, setGamesData } = useContext(GamesContext);
@@ -67,7 +33,7 @@ export default function Games() {
   const [videoId, setVideoId] = useState('');
   const [imageHeight, setImageHeight] = useState(0);
   const imageRef = useRef(null);
-  const {userData, setUserData } = useContext(UserContext);
+  const { setUserData } = useContext(UserContext);
   const firebaseConfig = {
     apiKey: "AIzaSyCmrOKFfM9TEqNcDmgYfytHrcOGg3lN2uY",
     authDomain: "appmasters-8aa8e.firebaseapp.com",
@@ -77,51 +43,6 @@ export default function Games() {
     appId: "1:804104280141:web:189bbfb7d14391281ca404",
     measurementId: "G-J4WJ5C7Z45"
   };
-
-  useEffect(() => {
-    filterGames();
-  }, [searchQuery, selectedGenre, gamesData, showFavorites, favorites]);
-
-  useEffect(() => {
-    setLoading(true);
-    fetchData();
-    fetchFavorites();
-    fetchRatings();
-    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
-      setUser(user);
-      setUserData(user);
-      if (user) {
-        toast(`Bem-vindo 😍, ${user.displayName}!`);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    fetchFavorites();
-    fetchRatings();
-    if (isFirstRender) {
-      setFilteredGames(gamesData);
-      setIsFirstRender(false);
-    }
-  }, [isFirstRender, gamesData]);
-
-  useEffect(() => {
-    const fetchYouTubeVideo = async () => {
-      if (selectedGame) {
-        const game = gamesData.find((game) => game.id === selectedGame);
-        if (game) {
-          const videoId = await searchYouTubeVideo(game.title);
-          setVideoId(videoId);
-          setShowVideo(true);
-        }
-      } else {
-        setShowVideo(false);
-      }
-    };
-
-    fetchYouTubeVideo();
-  }, [selectedGame]);
 
   const searchYouTubeVideo = async (title) => {
     try {
@@ -392,24 +313,6 @@ export default function Games() {
     setIsSortingAlphabetically(false);
   };
 
-  let sortedGames = [...filteredGames];
-
-  if (sorting === 'asc') {
-    sortedGames.sort((a, b) => {
-      const ratingA = ratings[a.id] || 0;
-      const ratingB = ratings[b.id] || 0;
-      return ratingA - ratingB;
-    });
-  } else if (sorting === 'desc') {
-    sortedGames.sort((a, b) => {
-      const ratingA = ratings[a.id] || 0;
-      const ratingB = ratings[b.id] || 0;
-      return ratingB - ratingA;
-    });
-  } else {
-    sortedGames = [...filteredGames];
-  }
-
   const getUniqueGenres = () => {
     if (gamesData !== undefined) {
       const genres = gamesData.map((game) => game.genre);
@@ -423,13 +326,75 @@ export default function Games() {
     setShowVideo(false);
   };
 
+  const uniqueGenres = getUniqueGenres();
+  let sortedGames = [...filteredGames];
+
+  if (sorting === 'asc') {
+    sortedGames.sort((a, b) => {
+      const ratingA = ratings[a.id] || 0;
+      const ratingB = ratings[b.id] || 0;
+      return ratingA - ratingB;
+    });
+  } 
+  else if (sorting === 'desc') {
+    sortedGames.sort((a, b) => {
+      const ratingA = ratings[a.id] || 0;
+      const ratingB = ratings[b.id] || 0;
+      return ratingB - ratingA;
+    });
+  } else {
+    sortedGames = [...filteredGames];
+  }
+  useEffect(() => {
+    filterGames();
+  }, [searchQuery, selectedGenre, gamesData, showFavorites, favorites]);
+
+  useEffect(() => {
+    setLoading(true);
+    fetchData();
+    fetchFavorites();
+    fetchRatings();
+    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+      setUser(user);
+      setUserData(user);
+      if (user) {
+        toast(`Bem-vindo 😍, ${user.displayName}!`);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    fetchFavorites();
+    fetchRatings();
+    if (isFirstRender) {
+      setFilteredGames(gamesData);
+      setIsFirstRender(false);
+    }
+  }, [isFirstRender, gamesData]);
+
+  useEffect(() => {
+    const fetchYouTubeVideo = async () => {
+      if (selectedGame) {
+        const game = gamesData.find((game) => game.id === selectedGame);
+        if (game) {
+          const videoId = await searchYouTubeVideo(game.title);
+          setVideoId(videoId);
+          setShowVideo(true);
+        }
+      } else {
+        setShowVideo(false);
+      }
+    };
+
+    fetchYouTubeVideo();
+  }, [selectedGame]);
+
   useEffect(() => {
     if (imageRef.current) {
       setImageHeight(imageRef.current.offsetHeight);
     }
   }, [selectedGame, filterGames]);
-
-  const uniqueGenres = getUniqueGenres();
 
   return (
     <GamesContainer>
@@ -529,7 +494,7 @@ export default function Games() {
                     height={imageHeight}
                     allowFullScreen
                   ></YTiframe>
-                  <FaRegWindowClose onClick={() => handleCloseVideo()} />
+                  <FaRegWindowClose cursor="pointer" onClick={() => handleCloseVideo()} />
                 </GameImageContainer>
               )}
               <GameTitle>

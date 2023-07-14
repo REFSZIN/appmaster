@@ -125,8 +125,8 @@ export default function LoginPage() {
     <Main>
       <Header />
       <Login />
-      <Footer />
       <Canvas ref={threeCanvasRef}></Canvas>
+      <Footer />
     </Main>
   );
 }

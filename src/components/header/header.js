@@ -1,23 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import {
-  ScrollToTopButton,
-  NavItem,
-  LogoImg,
-  LogoContainer,
-  MenuHamburg,
-  HeaderContainer,
-  LogoutButton,
-  SearchContainer,
-  SortButton,
-  DefaultSortButton,
-  SearchContainerBusca,
-  SearchInput,
-  GenreSelect,
-  Button,
-  BoxBtns,
-  SearchMobile
-} from './styled';
+import { ScrollToTopButton, NavItem, LogoImg, LogoContainer, MenuHamburg, HeaderContainer, LogoutButton, SearchContainer, SortButton, DefaultSortButton,SearchContainerBusca, SearchInput, GenreSelect, Button, BoxBtns, SearchMobile } from './styled';
 import React, { useContext, useState, useEffect } from 'react';
 import { FaAlignRight, FaArrowUp, FaUser, FaUsersSlash } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
@@ -123,18 +106,6 @@ export default function Header() {
     };
   }, []);
 
-  useEffect(() => {
-    const getUniqueGenres = () => {
-      if (gamesData !== undefined) {
-        const genres = gamesData.map((game) => game.genre);
-        return [...new Set(genres)];
-      }
-      return [];
-    };
-
-    setUniqueGenres(getUniqueGenres());
-  }, [gamesData]);
-
   const filterGames = () => {
     let filtered = [];
 
@@ -173,6 +144,18 @@ export default function Header() {
       filtered.sort((a, b) => a.title.localeCompare(b.title));
     }
   };
+  
+  useEffect(() => {
+    const getUniqueGenres = () => {
+      if (gamesData !== undefined) {
+        const genres = gamesData.map((game) => game.genre);
+        return [...new Set(genres)];
+      }
+      return [];
+    };
+
+    setUniqueGenres(getUniqueGenres());
+  }, [gamesData]);
 
   useEffect(() => {
     filterGames();

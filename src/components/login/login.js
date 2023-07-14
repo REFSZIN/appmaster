@@ -4,8 +4,8 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import firebase from 'firebase/compat/app';
 import UserContext from '../../contexts/UserContext';
-import 'firebase/compat/auth';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import 'firebase/compat/auth';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -17,14 +17,6 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { setUserData } = useContext(UserContext);
-
-  useEffect(() => {
-    setEmail('');
-    setPassword('');
-    setConfirmPassword('');
-    setName('');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [isLoginScreen]);
 
   const handleLogin = async () => {
     if (password.length < 6) {
@@ -81,6 +73,14 @@ export default function Login() {
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
+
+  useEffect(() => {
+    setEmail('');
+    setPassword('');
+    setConfirmPassword('');
+    setName('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [isLoginScreen]);
 
   return (
     <LoginContainer>
