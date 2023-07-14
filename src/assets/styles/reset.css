@@ -104,4 +104,6 @@ body{
 }
 .MuiPaper-root{
 	background-color: var(--color-bg) !important;
+	width: fit-content !important;
+	height: fit-content;
 }

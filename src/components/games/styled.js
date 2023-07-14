@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { FaPlayCircle } from 'react-icons/fa';
 
 export const FavoriteIcon = styled.span`
@@ -193,7 +193,7 @@ export const GameCard = styled.div`
   display: flex;
   flex-direction: column;
   background-color: #0000;
-  padding: 20px;
+  padding: 30px;
   border-radius: 4px;
   animation: fadeInUp 1s;
   background-image: linear-gradient(
@@ -214,6 +214,13 @@ export const GameCard = styled.div`
     & img{
       transform: scale(1.02);
     }
+  }
+  position: relative;
+  @media (max-width: 1000px) {
+    padding: 25px;
+  }
+  @media (max-width: 425px) {
+    padding: 20px;
   }
 `;
 export const YTiframe = styled.iframe`
@@ -262,6 +269,12 @@ export const GameDescription = styled.p`
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-word;
+  @media (max-width: 550px) {
+    font-size: 13px;
+  }
+  @media (max-width: 400px) {
+    font-size: 12px;
+  }
 `;
 
 export const GameDetails = styled.div`
@@ -272,13 +285,22 @@ export const GameDetails = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: pre-wrap;
+  &:last-child {
+    margin-bottom: 20px !important;
+  }
 `;
 
 export const GameDetail = styled.span`
-  font-size: 12px;
+  font-size: 14px;
   word-wrap: break-word;
   overflow: hidden;
   text-overflow: ellipsis;
+  @media (max-width: 550px) {
+    font-size: 12px;
+  }
+  @media (max-width: 400px) {
+    font-size: 10px;
+  }
 `;
 
 export const GameLink = styled.a`
@@ -292,13 +314,88 @@ export const GameLink = styled.a`
   font-weight: bold;
   text-align: center;
   transition: background-color 0.3s ease;
-  margin: 5%;
-  margin-bottom: 0%;
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
   cursor: pointer;
+  margin-top: 20px;
+  margin-bottom: 10px !important; 
   &:hover {
-    cursor: pointer;
-    background-color: #0056b3;
+    ${({ glowOnHover }) =>
+      glowOnHover &&
+      css`
+        background:  #0056b3;
+        z-index: 0;
+        position: absolute;
+        overflow: hidden;
+      `}
   }
+  @media (max-width: 750px) {
+    bottom: 0px;
+    margin: 0px;
+    margin-top: 40px !important;
+  }
+  ${({ glowOnHover }) =>
+    glowOnHover &&
+    css`
+      &::before {
+        content: '';
+        background: linear-gradient(
+        45deg,
+        rgb(0, 80, 109),
+        rgb(0, 87, 149),
+        rgb(0, 99, 219),
+        rgb(0, 255, 213),
+        rgb(0, 43, 255),
+        rgb(0, 43, 265),
+        rgb(0, 86, 179),
+        rgb(0, 81, 142)
+        );
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        background-size: 400%;
+        z-index: -1;
+        filter: blur(5px);
+        width: calc(100% + 4px);
+        height: calc(100% + 4px);
+        animation: glowing 20s linear infinite;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+        border-radius: 10px;
+      }
+
+      &:active {
+        color: #000;
+      }
+
+      &:active::after {
+        background: transparent;
+      }
+
+      &:hover::before {
+        opacity: 1;
+      }
+
+      &::after {
+        z-index: -1;
+        content: '';
+      }
+
+      @keyframes glowing {
+        0% {
+          background-position: 0 0;
+        }
+        50% {
+          background-position: 400% 0;
+        }
+        100% {
+          background-position: 0 0;
+        }
+      }
+    `}
 `;
 
 export const Button = styled.button`

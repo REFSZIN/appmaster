@@ -18,8 +18,9 @@ export const LoginForm = styled.div`
   border: 1px solid #0056b3;
   border-radius: 4px;
   padding: 20px;
-  width: 300px;
-  max-width: 100%;
+  width: 40%;
+  max-width: 60%;
+  min-width: 300px;
   animation: fadeInUp 1s;
   margin-bottom: 120px;
   @media (max-width: 900px) {

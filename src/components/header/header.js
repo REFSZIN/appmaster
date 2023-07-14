@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import { ScrollToTopButton, NavItem, LogoImg, LogoContainer, MenuHamburg, HeaderContainer, LogoutButton, SearchContainer, SortButton, DefaultSortButton,SearchContainerBusca, SearchInput, GenreSelect, Button, BoxBtns, SearchMobile } from './styled';
+import { ScrollToTopButton, NavItem, LogoImg, LogoContainer, MenuHamburg, HeaderContainer, LogoutButton, SearchContainer, SortButton, DefaultSortButton,SearchContainerBusca, SearchInput, GenreSelect, Button, BoxBtns, SearchMobile,BtnsMobile } from './styled';
 import React, { useContext, useState, useEffect } from 'react';
 import { FaAlignRight, FaArrowUp, FaUser, FaUsersSlash } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
@@ -267,13 +267,15 @@ export default function Header() {
           transformOrigin={{ horizontal: 'right', vertical: 'top' }}
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
-        {window.innerWidth < 1180 && showButton && (
-          <MenuItem>
-            <SearchMobile>
+          {window.innerWidth < 1180 && showButton && (
+            <MenuItem>
+              <SearchMobile>
               <GenreSelect
                   name="buscaSelect"
                   value={selectedGenre}
-                  onChange={handleGenreSelect}>
+                  onChange={handleGenreSelect}
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <option key={''} value="">
                     Todos os gêneros
                   </option>
@@ -283,47 +285,50 @@ export default function Header() {
                     </option>
                   ))}
                 </GenreSelect>
-              <SearchInput
+                <SearchInput
                   type="text"
                   name="busca"
                   placeholder="Buscar por título"
                   value={searchQuery}
                   onChange={handleSearch}
+                  onClick={(e) => e.stopPropagation()}
                 />
-              {userData ? <>
+                {userData ? <>
                 <Button onClick={handleToggleShowFavorites}>
-                  {showFavorites ? 'Todos' : 'Favoritos'}
+                {showFavorites ? 'Todos' : 'Favoritos'}
                 </Button>
                 <SortButton onClick={handleToggleSorting}>
-                  Ordenar por Avaliação {sorting === 'asc' ? '↑' : '↓'}
+                Ordenar por Avaliação {sorting === 'asc' ? '↑' : '↓'}
                 </SortButton>
                 <DefaultSortButton onClick={handleToggleDefaultSorting}>
-                  Ordenar por {!defaultSorting ? 'Padrão' : 'Alfabética'}
+                Ordenar por {!defaultSorting ? 'Padrão' : 'Alfabética'}
                 </DefaultSortButton>
-              </> : <></>}
-            </SearchMobile>
-          </MenuItem>
-        )}
+                </> : <></>}
+              </SearchMobile>
+            </MenuItem>
+          )}
           <MenuItem>
-            <NavItem>
+          <BtnsMobile>
+          <NavItem>
               {userData ? (
-                <div>
+                <BtnsMobile>
                   <LogoutButton onClick={handleLogout}>
                     <FaUsersSlash />
                     Sair
                   </LogoutButton>
-                </div>
+                </BtnsMobile>
               ) : (
-                <div>
+                <BtnsMobile>
                   <Link to="/auth/">
                     <LogoutButton>
                       <FaUser />
                       Login
                     </LogoutButton>
                   </Link>
-                </div>
+                </BtnsMobile>
               )}
             </NavItem>
+          </BtnsMobile>
           </MenuItem>
         </Menu>
       </MenuHamburg>

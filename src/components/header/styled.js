@@ -4,7 +4,7 @@ export const LogoutButton = styled.button`
   background-color: rgba(0,0,0,0.5);
   color: #fff;
   padding: 8px;
-  border: none;
+  border: 1px solid #fff;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -24,7 +24,7 @@ export const SearchInput = styled.input`
   margin-right: 10px;
   margin-left: 10px;
   width: 200px;
-  @media (max-width: 1010px) {
+  @media (max-width: 1180px) {
     width: 100% !important;
     margin: 20px;
     flex-direction: column;
@@ -47,7 +47,12 @@ export const SearchMobile = styled.div`
   align-items: center;
   justify-content: center;
   margin-bottom: 20px;
-  @media (max-width: 1010px) {
+  @media (max-width: 1180px) {
+    width: 100% !important;
+    margin: 20px;
+    flex-direction: column;
+  }
+  @media (max-width: 1115px) {
     width: 100% !important;
     margin: 20px;
     flex-direction: column;
@@ -63,7 +68,7 @@ export const SortButton = styled.button`
     margin-left: 0px;
     margin-top: 10px;
   }
-  @media (max-width: 1010px) {
+  @media (max-width: 1180px) {
     width: 100% !important;
     margin: 0px;
     margin-top: 20px;
@@ -71,6 +76,18 @@ export const SortButton = styled.button`
   &:hover {
     background-color: rgb(0, 123, 255);
   }
+`;
+
+export const BtnsMobile = styled.div`
+    width: 100%;
+    display: flex;
+    -webkit-box-pack: end;
+    justify-content: center;
+    -webkit-box-align: center;
+    align-items: center;
+    flex-direction: column;
+    align-content: center;
+    flex-wrap: nowrap;
 `;
 
 export const DefaultSortButton = styled.button`
@@ -84,7 +101,7 @@ export const DefaultSortButton = styled.button`
   cursor: pointer;
   margin-left: 10px;
   word-break: break-word;
-    @media (max-width: 1010px) {
+    @media (max-width: 1180px) {
     width: 100% !important;
     margin: 0px;
     margin-top: 20px;
@@ -109,7 +126,7 @@ export const SearchContainerBusca = styled.div`
   align-items: center;
   justify-content: center;
   margin: 0px 0px 20px 20px;
-  @media (max-width: 1010px) {
+  @media (max-width: 1080px) {
     width: 100% !important;
     margin: 0px;
     margin-top: 20px;
@@ -121,7 +138,7 @@ export const GenreSelect = styled.select`
   border-radius: 4px;
   border: 1px solid #ccc;
   width: 200px;
-  @media (max-width: 1010px) {
+  @media (max-width: 1180px) {
     width: 100% !important;
     margin: 0px;
     margin-top: 20px;
@@ -135,7 +152,7 @@ export const Button = styled.button`
   border-radius: 4px;
   font-weight: bold;
   word-break: break-word;
-  @media (max-width: 1010px) {
+  @media (max-width: 1180px) {
     width: 100% !important;
     margin: 0px;
     margin-top: 20px;
@@ -177,9 +194,6 @@ export const LogoContainer = styled.div`
 export const LogoImg = styled.img`
   width: 60px;
   height: 60px;
-  @media (max-width: 400px){
-  width: 50px;
-}
 `;
 
 export const NavItem = styled.h3`

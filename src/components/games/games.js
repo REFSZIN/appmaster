@@ -528,7 +528,8 @@ export default function Games() {
                 <GameDetail>Publicador: {game.publisher}</GameDetail>
                 <GameDetail>Data de Lançamento: {game.release_date}</GameDetail>
               </GameDetails>
-              <GameLink href={game.game_url} target="_blank">
+                <br/>
+              <GameLink href={game.game_url} target="_blank" glowOnHover={true}>
                 Jogar
               </GameLink>
             </GameCard>

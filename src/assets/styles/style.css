@@ -32,7 +32,7 @@ ul{
 }
 ::-webkit-scrollbar {
   width: 10px; 
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
 ::-webkit-scrollbar-thumb {
