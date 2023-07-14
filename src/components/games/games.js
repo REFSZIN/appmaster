@@ -44,6 +44,7 @@ import {
 import { FaRegWindowClose } from 'react-icons/fa';
 import LoaderGif from '../../assets/loaders/loader.gif';
 import a404 from '../../assets/loaders/404.gif';
+import UserContext from '../../contexts/UserContext';
 
 export default function Games() {
   const { gamesData, errormsg, setGamesData } = useContext(GamesContext);
@@ -66,7 +67,7 @@ export default function Games() {
   const [videoId, setVideoId] = useState('');
   const [imageHeight, setImageHeight] = useState(0);
   const imageRef = useRef(null);
-
+  const {userData, setUserData } = useContext(UserContext);
   const firebaseConfig = {
     apiKey: "AIzaSyCmrOKFfM9TEqNcDmgYfytHrcOGg3lN2uY",
     authDomain: "appmasters-8aa8e.firebaseapp.com",
@@ -88,6 +89,7 @@ export default function Games() {
     fetchRatings();
     const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
       setUser(user);
+      setUserData(user);
       if (user) {
         toast(`Bem-vindo 😍, ${user.displayName}!`);
       }
