@@ -1,21 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import {
-  ScrollToTopButton,
-  NavItem,
-  LogoImg,
-  LogoContainer,
-  MenuHamburg,
-  HeaderContainer,
-  LogoutButton,
-  SearchContainer,
-  SortButton,
-  SearchContainerBusca,
-  GenreSelect,
-  Button,
-  BoxBtns,
-  SearchMobile,
-  BtnsMobile,
+import {ScrollToTopButton,NavItem,LogoImg,LogoContainer,MenuHamburg,HeaderContainer,LogoutButton,SearchContainer,SortButton,SearchContainerBusca,GenreSelect,Button,BoxBtns,SearchMobile,BtnsMobile,
 } from './styled';
 import React, { useContext, useState, useEffect } from 'react';
 import { FaAlignRight, FaArrowUp, FaUser, FaUsersSlash } from 'react-icons/fa';
@@ -33,28 +18,16 @@ import 'firebase/compat/auth';
 
 export default function Header() {
   const { userData, setUserData } = useContext(UserContext);
-  const {gamesData,setFilteredGames,favorites,showFavorites,setShowFavorites,sorting,setSorting,ratings,filteredGames
-  } = useContext(GamesContext);
+  const {gamesData, setGamesData, setFilteredGames,favorites,showFavorites,setShowFavorites,sorting,setSorting,ratings,filteredGames, clearContextData ,setDefaultSorting} = useContext(GamesContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [showButton, setShowButton] = useState(false);
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('');
   const [uniqueGenres, setUniqueGenres] = useState([]);
   const [isSortingAlphabetically, setIsSortingAlphabetically] = useState(false);
-  const [isSearching, setIsSearching] = useState(false);
-  const handleLogout = async () => {
-    try {
-      await firebase.auth().signOut();
-      setUserData(null);
-      navigate('/auth/');
-      toast('Usuário desconectado com sucesso.');
-    } catch (error) {
-      toast.error('Erro ao desconectar o usuário.');
-    }
-  };
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -82,6 +55,7 @@ export default function Header() {
     setSorting('');
     if (!showFavorites) {
       setIsSortingAlphabetically(false);
+      setDefaultSorting(false);
     }
   };
 
@@ -91,36 +65,7 @@ export default function Header() {
     setIsSortingAlphabetically(false);
   };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 1100) {
-        setShowScrollButton(true);
-      } else {
-        setShowScrollButton(false);
-      }
-    };
-
-    const handleShowButton = () => {
-      if (window.scrollY > 500) {
-        setShowButton(true);
-      } else {
-        setShowButton(false);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    window.addEventListener('scroll', handleShowButton);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('scroll', handleShowButton);
-    };
-  }, []);
-
   const filterGames = () => {
-      if (isSearching) {
-    return;
-  }
     let filtered = [];
 
     if (showFavorites) {
@@ -159,6 +104,21 @@ export default function Header() {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await firebase.auth().signOut();
+      setUserData(null);
+      setGamesData([]);
+      clearContextData();
+      setUniqueGenres([]);
+      setSelectedGenre('');
+      navigate('/auth/');
+      toast('Usuário desconectado com sucesso.');
+    } catch (error) {
+      toast.error('Erro ao desconectar o usuário.');
+    }
+  };
+
   useEffect(() => {
     const getUniqueGenres = () => {
       if (gamesData !== undefined) {
@@ -173,7 +133,6 @@ export default function Header() {
 
   useEffect(() => {
     filterGames();
-    
   }, [searchQuery, selectedGenre, gamesData, showFavorites, favorites]);
 
   let sortedGames = [...filteredGames];
@@ -194,6 +153,32 @@ export default function Header() {
   } else {
     sortedGames = [...filteredGames];
   }
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 1100) {
+        setShowScrollButton(true);
+      } else {
+        setShowScrollButton(false);
+      }
+    };
+
+    const handleShowButton = () => {
+      if (window.scrollY > 500) {
+        setShowButton(true);
+      } else {
+        setShowButton(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleShowButton);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('scroll', handleShowButton);
+    };
+  }, []);
 
   return (
     <HeaderContainer>
@@ -280,7 +265,7 @@ export default function Header() {
           slotProps={{
             elevation: 0,
             sx: {
-              background: 'black',
+              background: 'white',
               overflow: 'visible',
               color: 'white',
               filter: 'drop-shadow(0px 22px 8px #000)',
@@ -307,7 +292,7 @@ export default function Header() {
           transformOrigin={{ horizontal: 'right', vertical: 'top' }}
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
-          {window.innerWidth < 1180 && showButton && (
+          {window.innerWidth < 1180 && (
             <MenuItem>
               <SearchMobile>
                 <GenreSelect

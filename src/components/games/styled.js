@@ -186,7 +186,7 @@ export const GamesGrid = styled.div`
     grid-template-columns: 1fr;
   }
   @media (max-width: 900px) {
-    margin-bottom: 100px !important;
+    margin-bottom: 150px !important;
   }
 `;
 

@@ -186,12 +186,6 @@ export const HeaderContainer = styled.header`
 }
 `;
 
-export const MenuHamburg = styled.div`
-`;
-
-export const LogoContainer = styled.div`
-`;
-
 export const LogoImg = styled.img`
   width: 60px;
   height: 60px;
@@ -228,4 +222,10 @@ export const ScrollToTopButton = styled.button`
   cursor: pointer;
   font-size: 18px;
   z-index: 3;
+`;
+
+export const MenuHamburg = styled.div`
+`;
+
+export const LogoContainer = styled.div`
 `;

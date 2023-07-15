@@ -103,7 +103,7 @@ body{
   overflow-x: hidden;
 }
 .MuiPaper-root{
-	background-color: var(--color-bg) !important;
+	background-color: rgb(24, 26, 27) !important;
 	width: fit-content !important;
 	height: fit-content;
 }

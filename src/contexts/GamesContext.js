@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, useContext, useRef,createContext } from 'react';
+import React, { useState, useRef,createContext } from 'react';
+import useLocalStorage from '../hooks/useLocalStorage';
 import useGames from '../hooks/api/useGames';
-import UserContext from './UserContext';
 import { toast } from 'react-toastify';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
@@ -11,10 +11,9 @@ const GamesContext = createContext();
 export default GamesContext;
 
 export function GamesProvider({ children }) {
-  const { setUserData } = useContext(UserContext);
   const { getGames } = useGames();
   const imageRef = useRef(null);
-  const [gamesData, setGamesData] = useState([]);
+  const [gamesData, setGamesData] = useLocalStorage('gamesData', []);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('');
@@ -31,16 +30,6 @@ export function GamesProvider({ children }) {
   const [showVideo, setShowVideo] = useState(false);
   const [videoId, setVideoId] = useState('');
   const [imageHeight, setImageHeight] = useState(0);
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyCmrOKFfM9TEqNcDmgYfytHrcOGg3lN2uY",
-    authDomain: "appmasters-8aa8e.firebaseapp.com",
-    projectId: "appmasters-8aa8e",
-    storageBucket: "appmasters-8aa8e.appspot.com",
-    messagingSenderId: "804104280141",
-    appId: "1:804104280141:web:189bbfb7d14391281ca404",
-    measurementId: "G-J4WJ5C7Z45"
-  };
 
     const handleError = (error) => {
       setLoading(false);
@@ -59,71 +48,6 @@ export function GamesProvider({ children }) {
         toast.error(
           'O servidor não conseguiu responder por agora, tente voltar novamente mais tarde.'
         );
-      }
-    };
-
-    const fetchFavorites = async () => {
-      const user = firebase.auth().currentUser;
-      if (user) {
-        const userRef = firebase.firestore().collection('users').doc('OixewtYxzSFIz8SkoKzx');
-        const snapshot = await userRef.get();
-        if (snapshot.exists) {
-          const data = snapshot.data();
-          setFavorites(data.favorites || []);
-        }
-      }
-    };
-
-    const fetchRatings = async () => {
-      const user = firebase.auth().currentUser;
-      if (user) {
-        const userRef = firebase.firestore().collection('users').doc('OixewtYxzSFIz8SkoKzx');
-        const snapshot = await userRef.get();
-        if (snapshot.exists) {
-          const data = snapshot.data();
-          setRatings(data.ratings || {});
-        }
-      }
-    };
-
-    const filterGames = () => {
-      let filtered = [];
-
-      if (showFavorites) {
-        filtered = gamesData.filter((game) => favorites.includes(game.id));
-
-        if (selectedGenre !== '') {
-          filtered = filtered.filter((game) => game.genre === selectedGenre);
-        }
-
-        if (searchQuery !== '') {
-          const query = searchQuery.toLowerCase();
-          filtered = filtered.filter((game) =>
-            game.title.toLowerCase().includes(query)
-          );
-        }
-      } else {
-        if (gamesData !== undefined) {
-          filtered = gamesData;
-          if (searchQuery !== '') {
-            const query = searchQuery.toLowerCase();
-            filtered = filtered.filter((game) =>
-              game.title.toLowerCase().includes(query)
-            );
-          }
-          if (selectedGenre !== '') {
-            filtered = filtered.filter((game) => game.genre === selectedGenre);
-          }
-        }
-      }
-
-      setFilteredGames(filtered);
-
-      if (isSortingAlphabetically) {
-        setSorting('');
-        setFilteredGames((prevFilteredGames) => {
-          return [...prevFilteredGames].sort((a, b) => a.title.localeCompare(b.title));
-        });
       }
     };
 
@@ -165,7 +89,6 @@ export function GamesProvider({ children }) {
         const response = await getGames();
         setGamesData(response);
         setLoading(false);
-        window.location.reload();
       } catch (error) {
         handleError(error);
       }
@@ -270,6 +193,26 @@ export function GamesProvider({ children }) {
       }
     };
 
+    const clearContextData = () => {
+      setGamesData([]);
+      setLoading(false);
+      setSearchQuery('');
+      setSelectedGenre('');
+      setFilteredGames([]);
+      setFavorites([]);
+      setShowFavorites(false);
+      setRatings([]);
+      setSorting('');
+      setUser(null);
+      setDefaultSorting(false);
+      setIsFirstRender(true);
+      setIsSortingAlphabetically(false);
+      setSelectedGame(null);
+      setShowVideo(false);
+      setVideoId('');
+      setImageHeight(0);
+    };
+
     const gamesContextValues = {
       gamesData,
       loading,
@@ -315,6 +258,7 @@ export function GamesProvider({ children }) {
       handleRateGame,
       handleCloseVideo,
       imageRef,
+      clearContextData
     };
 
   return (

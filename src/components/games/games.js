@@ -36,7 +36,7 @@ export default function Games() {
     try {
       const response = await fetch(
         `https://www.googleapis.com/youtube/v3/search?q=${encodeURIComponent(
-          title + ' Official Game'
+          title + ' Oficial Game Trailer Gameplay '
         )}&part=snippet&maxResults=1&key=AIzaSyDTDvecZqYzHKjU2NNnuV3EXIqA0V_6UWU`
       );
       if (response.ok) {
@@ -263,6 +263,7 @@ export default function Games() {
     setSorting('');
     if (!showFavorites) {
       setIsSortingAlphabetically(false);
+      setDefaultSorting(true);
     }
   };
 
@@ -358,6 +359,7 @@ export default function Games() {
     if (isFirstRender) {
       setFilteredGames(gamesData);
       setIsFirstRender(false);
+      fetchData();
     }
   }, [isFirstRender, gamesData]);
 
