@@ -36,7 +36,7 @@ export default function Games() {
     try {
       const response = await fetch(
         `https://www.googleapis.com/youtube/v3/search?q=${encodeURIComponent(
-          title + ' Oficial Game Trailer Gameplay '
+          title + ' Oficial Game Trailer Gameplay'
         )}&part=snippet&maxResults=1&key=AIzaSyDTDvecZqYzHKjU2NNnuV3EXIqA0V_6UWU`
       );
       if (response.ok) {
@@ -83,11 +83,6 @@ export default function Games() {
     setLoading(true);
     try {
       firebase.initializeApp(firebaseConfig);
-      const response = await Promise.race([
-        getGames(),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000)),
-      ]);
-      setGamesData(response);
       setLoading(false);
       filterGames();
       fetchFavorites();
