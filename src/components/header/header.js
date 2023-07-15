@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-unused-vars */
 import {ScrollToTopButton,NavItem,LogoImg,LogoContainer,MenuHamburg,HeaderContainer,LogoutButton,SearchContainer,SortButton,SearchContainerBusca,GenreSelect,Button,BoxBtns,SearchMobile,BtnsMobile,
 } from './styled';
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { FaAlignRight, FaArrowUp, FaUser, FaUsersSlash } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
@@ -17,107 +16,10 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 
 export default function Header() {
-  const { userData, setUserData } = useContext(UserContext);
-  const {gamesData, setGamesData, setFilteredGames,favorites,showFavorites,setShowFavorites,sorting,setSorting,ratings,filteredGames, clearContextData ,setDefaultSorting} = useContext(GamesContext);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const [showScrollButton, setShowScrollButton] = useState(false);
-  const [showButton, setShowButton] = useState(false);
+  const {gamesData,favorites,showFavorites,sorting,selectedGenre,searchQuery,clearContextData,uniqueGenres,setUniqueGenres,filterGames,anchorEl,showScrollButton,setShowScrollButton,showButton,setShowButton,open, handleToggleSortingMobile, handleToggleShowFavoritesMobile, handleGenreSelectMobile, handleScrollToTop, handleClose, handleClick } 
+  = useContext(GamesContext);
+  const { userData } = useContext(UserContext);
   const navigate = useNavigate();
-  const [searchQuery] = useState('');
-  const [selectedGenre, setSelectedGenre] = useState('');
-  const [uniqueGenres, setUniqueGenres] = useState([]);
-  const [isSortingAlphabetically, setIsSortingAlphabetically] = useState(false);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleScrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-
-  const handleGenreSelect = (event) => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setSelectedGenre(event.target.value);
-  };
-
-
-  const handleToggleShowFavorites = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setShowFavorites(!showFavorites);
-    setSelectedGenre('');
-    setSorting('');
-    if (!showFavorites) {
-      setIsSortingAlphabetically(false);
-      setDefaultSorting(false);
-    }
-  };
-
-  const handleToggleSorting = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setSorting(sorting === 'asc' ? 'desc' : 'asc');
-    setIsSortingAlphabetically(false);
-  };
-
-  const filterGames = () => {
-    let filtered = [];
-
-    if (showFavorites) {
-      filtered = gamesData.filter((game) => favorites.includes(game.id));
-
-      if (selectedGenre !== '') {
-        filtered = filtered.filter((game) => game.genre === selectedGenre);
-      }
-
-      if (searchQuery !== '') {
-        const query = searchQuery.toLowerCase();
-        filtered = filtered.filter((game) =>
-          game.title.toLowerCase().includes(query)
-        );
-      }
-    } else {
-      if (gamesData !== undefined) {
-        filtered = gamesData;
-        if (searchQuery !== '') {
-          const query = searchQuery.toLowerCase();
-          filtered = filtered.filter((game) =>
-            game.title.toLowerCase().includes(query)
-          );
-        }
-        if (selectedGenre !== '') {
-          filtered = filtered.filter((game) => game.genre === selectedGenre);
-        }
-      }
-    }
-
-    setFilteredGames(filtered);
-
-    if (isSortingAlphabetically) {
-      setSorting('');
-      filtered.sort((a, b) => a.title.localeCompare(b.title));
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await firebase.auth().signOut();
-      setUserData(null);
-      setGamesData([]);
-      clearContextData();
-      setUniqueGenres([]);
-      setSelectedGenre('');
-      navigate('/auth/');
-      toast('Usuário desconectado com sucesso.');
-    } catch (error) {
-      toast.error('Erro ao desconectar o usuário.');
-    }
-  };
 
   useEffect(() => {
     const getUniqueGenres = () => {
@@ -134,25 +36,6 @@ export default function Header() {
   useEffect(() => {
     filterGames();
   }, [searchQuery, selectedGenre, gamesData, showFavorites, favorites]);
-
-  let sortedGames = [...filteredGames];
-
-  if (sorting === 'asc') {
-    sortedGames.sort((a, b) => {
-      const ratingA = ratings[a.id] || 0;
-      const ratingB = ratings[b.id] || 0;
-      return ratingA - ratingB;
-    });
-  } 
-  else if (sorting === 'desc') {
-    sortedGames.sort((a, b) => {
-      const ratingA = ratings[a.id] || 0;
-      const ratingB = ratings[b.id] || 0;
-      return ratingB - ratingA;
-    });
-  } else {
-    sortedGames = [...filteredGames];
-  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -180,6 +63,17 @@ export default function Header() {
     };
   }, []);
 
+  const handleLogout = async () => {
+    try {
+      await firebase.auth().signOut();
+      clearContextData();
+      navigate('/auth/');
+      toast('Usuário desconectado com sucesso.');
+    } catch (error) {
+      toast.error('Erro ao desconectar o usuário.');
+    }
+  };
+
   return (
     <HeaderContainer>
       <LogoContainer>
@@ -195,7 +89,7 @@ export default function Header() {
               <GenreSelect
                 name="buscaSelect"
                 value={selectedGenre}
-                onChange={handleGenreSelect}
+                onChange={handleGenreSelectMobile}
               >
                 <option key={''} value="">
                   Todos os gêneros
@@ -206,11 +100,11 @@ export default function Header() {
                   </option>
                 ))}
               </GenreSelect>
-                <Button onClick={handleToggleShowFavorites} >
+                <Button onClick={handleToggleShowFavoritesMobile} >
                   {showFavorites ? 'Todos' : 'Favoritos'}
                 </Button>
-                <SortButton onClick={handleToggleSorting }>
-                  Ordenar por Avaliação {sorting === 'asc' ? '↑' : '↓'}
+                <SortButton onClick={handleToggleSortingMobile }>
+                  Ordenar por Avaliação {sorting === 'desc' ? '↓' : '↑'}
                 </SortButton>
               </SearchContainer>
             </BoxBtns>
@@ -221,7 +115,7 @@ export default function Header() {
                 <GenreSelect
                   name="buscaSelect"
                   value={selectedGenre}
-                  onChange={handleGenreSelect}
+                  onChange={handleGenreSelectMobile}
                 >
                 <option key={''} value="">
                   Todos os gêneros
@@ -298,7 +192,7 @@ export default function Header() {
                 <GenreSelect
                   name="buscaSelect"
                   value={selectedGenre}
-                  onChange={handleGenreSelect}
+                  onChange={handleGenreSelectMobile}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <option key={''} value="">
@@ -312,10 +206,10 @@ export default function Header() {
                 </GenreSelect>
                 {userData ? (
                   <>
-                    <Button onClick={handleToggleShowFavorites}>
+                    <Button onClick={handleToggleShowFavoritesMobile}>
                       {showFavorites ? 'Todos' : 'Favoritos'}
                     </Button>
-                    <SortButton onClick={handleToggleSorting}>
+                    <SortButton onClick={handleToggleSortingMobile}>
                       Ordenar por Avaliação {sorting === 'asc' ? '↑' : '↓'}
                     </SortButton>
                   </>

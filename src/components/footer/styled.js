@@ -51,7 +51,7 @@ export const SocialContainer = styled.div`
   }
 `;
 
-export const SocialTitle = styled.h4`
+export const SocialTitle = styled.span`
   font-size: 18px;
   font-weight: 500;
   margin-bottom: 10px;

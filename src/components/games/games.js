@@ -1,338 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { YTiframe, FavoriteIcon, RatingContainer, StarIcon, GamesContainer, GamesTitle, SearchContainer, DefaultSortButton, ContainerLoader, GifLoader, SearchInput, GenreSelect, Loader, ErrorMessage, NoResultsMessage, ErrorConteiner, GamesGrid, GameCard, GameImage, RefreshButton, GameTitle, GameDescription, GameDetails, GameDetail, GameLink, Button, SortButton, ErrorAviso, SearchContainerBusca, PlayIcon, GameImageContainer, GameImageWrapper, GameImageOverlay }from './styled';
-import React, { useState, useEffect, useContext } from 'react';
-import useGames from '../../hooks/api/useGames';
+import React, { useEffect, useContext } from 'react';
 import UserContext from '../../contexts/UserContext';
 import GamesContext from '../../contexts/GamesContext';
 import { toast } from 'react-toastify';
 import { FaRegWindowClose } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
 import LoaderGif from '../../assets/loaders/loader.gif';
 import a404 from '../../assets/loaders/404.gif';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 
 export default function Games() {
-  const {gamesData,setGamesData,filteredGames,setFilteredGames,favorites,setFavorites,showFavorites,setShowFavorites,ratings,setRatings,sorting,setSorting,user,setUser,defaultSorting,setDefaultSorting,isFirstRender,setIsFirstRender,selectedGame,setSelectedGame,showVideo,setShowVideo,videoId,setVideoId,imageHeight,setImageHeight,imageRef,errormsg} = useContext(GamesContext);
-  const { setUserData } = useContext(UserContext);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedGenre, setSelectedGenre] = useState('');
-  const { getGames } = useGames();
-  const navigate = useNavigate();
-  const [isSortingAlphabetically, setIsSortingAlphabetically] = useState(true);
+  const {gamesData,filteredGames,setFilteredGames,favorites,showFavorites,ratings,sorting,setUser,defaultSorting,isFirstRender,setIsFirstRender,selectedGame,setSelectedGame,showVideo,setShowVideo,videoId,setVideoId,imageHeight,setImageHeight,imageRef,errormsg,loading, setLoading,selectedGenre, searchQuery,handleRateGame, filterGames, uniqueGenres, handleCloseVideo, searchYouTubeVideo, fetchData, handleRefresh, handleSearch, handleGenreSelect, handleToggleDefaultSorting, fetchFavorites, fetchRatings, handleToggleFavorite, handleToggleShowFavorites, handleToggleSorting, sortedGames }
+  = useContext(GamesContext);
+  const { setUserData, userData } = useContext(UserContext);
   
-  const firebaseConfig = {
-    apiKey: "AIzaSyCmrOKFfM9TEqNcDmgYfytHrcOGg3lN2uY",
-    authDomain: "appmasters-8aa8e.firebaseapp.com",
-    projectId: "appmasters-8aa8e",
-    storageBucket: "appmasters-8aa8e.appspot.com",
-    messagingSenderId: "804104280141",
-    appId: "1:804104280141:web:189bbfb7d14391281ca404",
-    measurementId: "G-J4WJ5C7Z45"
-  };
-
-  const searchYouTubeVideo = async (title) => {
-    try {
-      const response = await fetch(
-        `https://www.googleapis.com/youtube/v3/search?q=${encodeURIComponent(
-          title + ' Oficial Game Trailer Gameplay'
-        )}&part=snippet&maxResults=1&key=AIzaSyDTDvecZqYzHKjU2NNnuV3EXIqA0V_6UWU`
-      );
-      if (response.ok) {
-        const data = await response.json();
-        const videoId = data.items[0].id.videoId;
-        return videoId;
-      } else {
-        handleCloseVideo();
-        const errorData = await response.json();
-        const errorMessage = errorData.error.message;
-        handleAPIError(response.status, errorMessage);
-      }
-    } catch (error) {
-      console.error('Erro ao buscar vídeo no YouTube:', error);
-      toast.error('Ocorreu um erro ao buscar o vídeo no YouTube. Por favor, tente novamente mais tarde.');
-    }
-  };
-  
-  const handleAPIError = (statusCode, errorMessage) => {
-    switch (statusCode) {
-      case 400:
-        toast.error('Solicitação inválida. Verifique os parâmetros da sua solicitação.');
-        break;
-      case 401:
-        toast.error('Não autorizado. Verifique se você possui as permissões corretas.');
-        break;
-      case 403:
-        toast.error('Excedemos a cota diaria API Data do YouTube.');
-        break;
-      case 404:
-        toast.error('Recurso não encontrado. Verifique se o vídeo existe e está disponível.');
-        break;
-      case 500:
-        toast.error('Erro interno do servidor. Por favor, tente novamente mais tarde.');
-        break;
-      default:
-        toast.error(`Ocorreu um erro (${statusCode}): ${errorMessage}`);
-        break;
-    }
-  };
-
-  const fetchData = async () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setLoading(true);
-    try {
-      firebase.initializeApp(firebaseConfig);
-      setLoading(false);
-      filterGames();
-      fetchFavorites();
-      fetchRatings();
-    } catch (error) {
-      handleError(error);
-    }
-  };
-
-  const handleError = (error) => {
-    setLoading(false);
-    if (error.message === 'Timeout') {
-      toast.error('O servidor demorou para responder, mas resolvemos por aqui 🍷🗿.');
-    } else if (error.response) {
-      const statusCode = error.response.status;
-      if ([500, 502, 503, 504, 507, 508, 509].includes(statusCode)) {
-        toast.error('O servidor falhou em responder, tente recarregar a página.');
-      } else {
-        toast.error(
-          'O servidor não conseguiu responder por agora, tente voltar novamente mais tarde.'
-        );
-      }
-    } else {
-      toast.error(
-        'O servidor não conseguiu responder por agora, tente voltar novamente mais tarde.'
-      );
-    }
-  };
-
-  const handleRefresh = async () => {
-    setLoading(true);
-    try {
-      const response = await getGames();
-      setGamesData(response);
-      setLoading(false);
-      fetchData();
-      window.location.reload();
-    } catch (error) {
-      handleError(error);
-    }
-  };
-
-  const handleSearch = (event) => {
-    setSearchQuery(event.target.value);
-  };
-
-  const handleGenreSelect = (event) => {
-    setSelectedGenre(event.target.value);
-  };
-
-  const handleToggleDefaultSorting = () => {
-    setDefaultSorting(!defaultSorting);
-    setIsSortingAlphabetically(true);
-    setFilteredGames((prevFilteredGames) => {
-      if (defaultSorting) {
-        setSorting('');
-        return [...prevFilteredGames].sort((a, b) => a.title.localeCompare(b.title));
-      } else {
-        setSorting('');
-        if (showFavorites) {
-          const sortedFavorites = favorites
-            .map((favoriteId) => prevFilteredGames.find((game) => game.id === favoriteId))
-            .filter((game) => game !== undefined);
-          return sortedFavorites;
-        }
-        return [...gamesData];
-      }
-    });
-  };
-
-  const filterGames = () => {
-    let filtered = [];
-
-    if (showFavorites) {
-      filtered = gamesData.filter((game) => favorites.includes(game.id));
-
-      if (selectedGenre !== '') {
-        filtered = filtered.filter((game) => game.genre === selectedGenre);
-      }
-
-      if (searchQuery !== '') {
-        const query = searchQuery.toLowerCase();
-        filtered = filtered.filter((game) =>
-          game.title.toLowerCase().includes(query)
-        );
-      }
-    } else {
-      if (gamesData !== undefined) {
-        filtered = gamesData;
-        if (searchQuery !== '') {
-          const query = searchQuery.toLowerCase();
-          filtered = filtered.filter((game) =>
-            game.title.toLowerCase().includes(query)
-          );
-        }
-        if (selectedGenre !== '') {
-          filtered = filtered.filter((game) => game.genre === selectedGenre);
-        }
-      }
-    }
-
-    setFilteredGames(filtered);
-
-    if (isSortingAlphabetically) {
-      setSorting('');
-      setFilteredGames((prevFilteredGames) => {
-        return [...prevFilteredGames].sort((a, b) => a.title.localeCompare(b.title));
-      });
-    }
-  };
-
-  const fetchFavorites = async () => {
-    const user = firebase.auth().currentUser;
-    if (user) {
-      const userRef = firebase.firestore().collection('users').doc('OixewtYxzSFIz8SkoKzx');
-      const snapshot = await userRef.get();
-      if (snapshot.exists) {
-        const data = snapshot.data();
-        setFavorites(data.favorites || []);
-      }
-    }
-  };
-
-  const fetchRatings = async () => {
-    const user = firebase.auth().currentUser;
-    if (user) {
-      const userRef = firebase.firestore().collection('users').doc('OixewtYxzSFIz8SkoKzx');
-      const snapshot = await userRef.get();
-      if (snapshot.exists) {
-        const data = snapshot.data();
-        setRatings(data.ratings || {});
-      }
-    }
-  };
-
-  const handleToggleFavorite = async (gameId) => {
-    const isFavorite = favorites.includes(gameId);
-    const updatedFavorites = isFavorite
-      ? favorites.filter((id) => id !== gameId)
-      : [...favorites, gameId];
-    const user = firebase.auth().currentUser;
-    if (user) {
-      try {
-        const userRef = firebase.firestore().collection('users').doc('OixewtYxzSFIz8SkoKzx');
-        await userRef.update({ favorites: updatedFavorites });
-        setFavorites(updatedFavorites);
-        setFilteredGames((prevFilteredGames) => {
-          const updatedGames = prevFilteredGames.map((game) => {
-            if (game.id === gameId) {
-              return { ...game, isFavorite: !isFavorite };
-            }
-            return game;
-          });
-          return [...updatedGames];
-        });
-        if (isFavorite) {
-          toast.info('Game removido dos favoritos.');
-        } else {
-          toast.success('Game adicionado aos favoritos.');
-        }
-      } catch (error) {
-        toast.error('Ocorreu um erro ao atualizar os favoritos.');
-      }
-    } else {
-      navigate('/auth/');
-      toast.error('Realize o login para adicionar favoritos.');
-    }
-  };
-
-  const handleToggleShowFavorites = () => {
-    setShowFavorites(!showFavorites);
-    setSelectedGenre('');
-    setSorting('');
-    if (!showFavorites) {
-      setIsSortingAlphabetically(false);
-      setDefaultSorting(true);
-    }
-  };
-
-  const handleRateGame = async (gameId, rating) => {
-    const user = firebase.auth().currentUser;
-
-    if (user) {
-      const userRef = firebase.firestore().collection('users').doc('OixewtYxzSFIz8SkoKzx');
-      const userSnapshot = await userRef.get();
-
-      if (userSnapshot.exists) {
-        const userData = userSnapshot.data();
-        const previousRating = userData.ratings && userData.ratings[gameId];
-
-        let updatedRatings;
-        if (previousRating === rating) {
-          delete userData.ratings[gameId];
-          updatedRatings = { ...userData.ratings };
-          toast.info('Avaliação retirada.');
-        } else {
-          updatedRatings = { ...userData.ratings, [gameId]: rating };
-          toast.success('Game avaliado.');
-        }
-
-        await userRef.update({ ratings: updatedRatings });
-        setRatings(updatedRatings);
-      }
-    } else {
-      navigate('/auth/');
-      toast.error('Realize o login para avaliar.');
-    }
-  };
-
-  const handleToggleSorting = () => {
-    setSorting(sorting === 'asc' ? 'desc' : 'asc');
-    setIsSortingAlphabetically(false);
-  };
-
-  const getUniqueGenres = () => {
-    if (gamesData !== undefined) {
-      const genres = gamesData.map((game) => game.genre);
-      return [...new Set(genres)];
-    }
-    return [];
-  };
-
-  const handleCloseVideo = () => {
-    setSelectedGame(null);
-    setShowVideo(false);
-  };
-
-  const uniqueGenres = getUniqueGenres();
-  let sortedGames = [...filteredGames];
-
-  if (sorting === 'asc') {
-    sortedGames.sort((a, b) => {
-      const ratingA = ratings[a.id] || 0;
-      const ratingB = ratings[b.id] || 0;
-      return ratingA - ratingB;
-    });
-  } 
-  else if (sorting === 'desc') {
-    sortedGames.sort((a, b) => {
-      const ratingA = ratings[a.id] || 0;
-      const ratingB = ratings[b.id] || 0;
-      return ratingB - ratingA;
-    });
-  } else {
-    sortedGames = [...filteredGames];
-  }
-  useEffect(() => {
-    filterGames();
-  }, [searchQuery, selectedGenre, gamesData, showFavorites, favorites]);
-
   useEffect(() => {
     setLoading(true);
     fetchData();
@@ -354,10 +36,27 @@ export default function Games() {
     if (isFirstRender) {
       setFilteredGames(gamesData);
       setIsFirstRender(false);
-      fetchData();
     }
   }, [isFirstRender, gamesData]);
 
+  useEffect(() => {
+    filterGames();
+  }, [searchQuery, selectedGenre, gamesData, showFavorites, favorites]);
+  
+  useEffect(() => {
+    const updateImageHeight = () => {
+      if (imageRef.current) {
+        setImageHeight(imageRef.current.offsetHeight);
+      }
+    };
+    updateImageHeight();
+
+    window.addEventListener('resize', updateImageHeight);
+    return () => {
+      window.removeEventListener('resize', updateImageHeight);
+    };
+  }, [selectedGame, filterGames]);
+  
   useEffect(() => {
     const fetchYouTubeVideo = async () => {
       if (selectedGame) {
@@ -375,11 +74,6 @@ export default function Games() {
     fetchYouTubeVideo();
   }, [selectedGame]);
 
-  useEffect(() => {
-    if (imageRef.current) {
-      setImageHeight(imageRef.current.offsetHeight);
-    }
-  }, [selectedGame, filterGames]);
 
   return (
     <GamesContainer>
@@ -392,19 +86,19 @@ export default function Games() {
           style={{ width: '250px', height: '250px' }}
         ></lord-icon>
         <GamesTitle>Master👾Games</GamesTitle>
-        {user ? (
-          <GameTitle>Olá {user.displayName}, divirta-se!</GameTitle>
+        { userData !== null ? (
+          <GameTitle>Olá {userData.displayName}, divirta-se!</GameTitle>
         ) : (
           <GameTitle>Olá Visitante! 💖</GameTitle>
         )}
       </ContainerLoader>
-      {user ? (
+      { userData !== null ? (
         <SearchContainer>
           <Button onClick={handleToggleShowFavorites}>
             {showFavorites ? 'Todos' : 'Favoritos'}
           </Button>
           <SortButton onClick={handleToggleSorting}>
-            Ordenar por Avaliação {sorting === 'asc' ? '↑' : '↓'}
+            Ordenar por Avaliação {sorting === 'desc' ? '↓' : '↑'}
           </SortButton>
           <DefaultSortButton onClick={handleToggleDefaultSorting}>
             Ordenar por {!defaultSorting ? 'Padrão' : 'Alfabética'}

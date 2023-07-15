@@ -1,5 +1,5 @@
 import { LoginContainer, LoginForm, LoginFormBtns, LoginFormTitle, Input, InputContainer, Button, ToggleLink, PasswordToggle } from './styled';
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import firebase from 'firebase/compat/app';
@@ -9,20 +9,23 @@ import 'firebase/compat/auth';
 
 export default function Login() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [name, setName] = useState('');
-  const [isLoginScreen, setIsLoginScreen] = useState(true);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const { setUserData } = useContext(UserContext);
+  const { setUserData, showConfirmPassword, showPassword, isLoginScreen, name, setName, confirmPassword, setConfirmPassword, password, setPassword, email, setEmail,  toggleScreen, togglePasswordVisibility, toggleConfirmPasswordVisibility } = useContext(UserContext);
+
+  useEffect(() => {
+    setEmail('');
+    setPassword('');
+    setConfirmPassword('');
+    setName('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoginScreen]);
 
   const handleLogin = async () => {
     if (password.length < 6) {
       toast.error('A senha deve ter 6 caracteres ou mais.');
       return;
     }
+    
     try {
       const response = await firebase.auth().signInWithEmailAndPassword(email, password);
       setUserData(response.user);
@@ -61,26 +64,6 @@ export default function Login() {
       }
     }
   };
-
-  const toggleScreen = () => {
-    setIsLoginScreen(!isLoginScreen);
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(!showConfirmPassword);
-  };
-
-  useEffect(() => {
-    setEmail('');
-    setPassword('');
-    setConfirmPassword('');
-    setName('');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [isLoginScreen]);
 
   return (
     <LoginContainer>
