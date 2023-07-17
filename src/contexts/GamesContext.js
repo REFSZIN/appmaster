@@ -32,12 +32,15 @@ export function GamesProvider({ children }) {
   const [imageHeight, setImageHeight] = useState(0);
   const [statusApi, setStatusApi] = useState(null);
   const [errormsg, setError] = useState('');
-  let [uniqueGenres, setUniqueGenres] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [showButton, setShowButton] = useState(false);
   const open = Boolean(anchorEl);
-  
+  const [paginationEnabled, setPaginationEnabled] = useState(true);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  let [uniqueGenres, setUniqueGenres] = useState([]);
+
   const clearContextData = () => {
     setLoading(false);
     setSearchQuery('');
@@ -132,14 +135,17 @@ export function GamesProvider({ children }) {
 
     const handleSearch = (event) => {
       setSearchQuery(event.target.value);
+      setCurrentPage(1);
     };
 
     const handleGenreSelect = (event) => {
       setSelectedGenre(event.target.value);
+      setCurrentPage(1);
     };
 
     const handleToggleDefaultSorting = () => {
       setDefaultSorting(!defaultSorting);
+      setCurrentPage(1);
       setIsSortingAlphabetically(true);
       setFilteredGames((prevFilteredGames) => {
         if (defaultSorting) {
@@ -195,6 +201,7 @@ export function GamesProvider({ children }) {
       setShowFavorites(!showFavorites);
       setSelectedGenre('');
       setSorting('');
+      setCurrentPage(1);
       if (!showFavorites) {
         setIsSortingAlphabetically(false);
       }
@@ -277,15 +284,17 @@ export function GamesProvider({ children }) {
 
     const filterGames = () => {
       let filtered = [];
-  
       if (showFavorites) {
+        setPaginationEnabled(false);
         filtered = gamesData.filter((game) => favorites.includes(game.id));
-  
+    
         if (selectedGenre !== '') {
+          setPaginationEnabled(false);
           filtered = filtered.filter((game) => game.genre === selectedGenre);
         }
-  
+    
         if (searchQuery !== '') {
+          setPaginationEnabled(false);
           const query = searchQuery.toLowerCase();
           filtered = filtered.filter((game) =>
             game.title.toLowerCase().includes(query)
@@ -295,24 +304,32 @@ export function GamesProvider({ children }) {
         if (gamesData !== undefined) {
           filtered = gamesData;
           if (searchQuery !== '') {
+            setPaginationEnabled(false);
             const query = searchQuery.toLowerCase();
             filtered = filtered.filter((game) =>
               game.title.toLowerCase().includes(query)
             );
           }
           if (selectedGenre !== '') {
+            setPaginationEnabled(false);
             filtered = filtered.filter((game) => game.genre === selectedGenre);
           }
         }
       }
-  
+    
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const paginatedGames = filtered.slice(startIndex, endIndex);
+      
       setFilteredGames(filtered);
-  
       if (isSortingAlphabetically) {
         setSorting('');
         setFilteredGames((prevFilteredGames) => {
           return [...prevFilteredGames].sort((a, b) => a.title.localeCompare(b.title));
         });
+      }
+      if (paginationEnabled) {
+        setFilteredGames(paginatedGames);
       }
     };
 
@@ -426,6 +443,7 @@ export function GamesProvider({ children }) {
     const handleGenreSelectMobile = (event) => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       setSelectedGenre(event.target.value);
+      setCurrentPage(1);
     };
   
   
@@ -434,6 +452,7 @@ export function GamesProvider({ children }) {
       setShowFavorites(!showFavorites);
       setSelectedGenre('');
       setSorting('');
+      setCurrentPage(1);
       if (!showFavorites) {
         setIsSortingAlphabetically(false);
         setDefaultSorting(false);
@@ -444,6 +463,48 @@ export function GamesProvider({ children }) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       setSorting(sorting === 'desc' ? 'asc' : 'desc');
       setIsSortingAlphabetically(false);
+    };
+
+    const handlePrevPage = () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setCurrentPage((prevPage) => prevPage - 1);
+      filterGames();
+    };
+    
+    const handleNextPage = () => {
+      setCurrentPage((prevPage) => prevPage + 1);
+      filterGames();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    
+    const handlePaginationToggle = () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const startIndex = (currentPage) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const paginatedGames = sortedGames.slice(startIndex, endIndex);
+      setPaginationEnabled((prevValue) => !prevValue);
+
+      if(paginationEnabled){
+        setItemsPerPage(10);
+        setCurrentPage(1);
+        setFilteredGames(paginatedGames);
+        filterGames();
+      }
+
+      if(!paginationEnabled){
+        setItemsPerPage(10);
+        setCurrentPage(1);
+        filterGames();
+      }
+      
+    };
+    
+    const handleItemsPerPageChange = (e) => {
+      const { value } = e.target;
+      setItemsPerPage(Number(value));
+      setCurrentPage(1);
+      filterGames();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const gamesContextValues = {
@@ -512,7 +573,8 @@ export function GamesProvider({ children }) {
       setShowScrollButton,
       showButton,
       setShowButton,
-      open, handleToggleSortingMobile, handleToggleShowFavoritesMobile, handleGenreSelectMobile, handleScrollToTop, handleClose, handleClick
+      open, handleToggleSortingMobile, handleToggleShowFavoritesMobile, handleGenreSelectMobile, handleScrollToTop, handleClose, handleClick,
+      paginationEnabled, setPaginationEnabled, setItemsPerPage, currentPage, setCurrentPage,handlePrevPage,handleNextPage,handlePaginationToggle,handleItemsPerPageChange, itemsPerPage
     };
 
   return (

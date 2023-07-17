@@ -185,9 +185,6 @@ export const GamesGrid = styled.div`
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
-  @media (max-width: 900px) {
-    margin-bottom: 150px !important;
-  }
 `;
 
 export const GameCard = styled.div`
@@ -418,7 +415,7 @@ export const Button = styled.button`
 export const SortButton = styled.button`
   padding: 8px 12px;
   border-radius: 4px;
-    font-weight: bold;
+  font-weight: bold;
   word-break: break-word;
     @media (max-width: 550px) {
     margin-left: 0px;
@@ -475,5 +472,59 @@ export const GameImageContainer = styled.div`
   }
   &:hover ${GameImageOverlay} {
     opacity: 1;
+  }
+`;
+export const PageNavigation = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 50px;
+  @media (max-width: 900px) {
+    margin-bottom: 170px !important;
+  }
+`;
+
+export const PaginationInfo = styled.div`
+  margin-bottom: 10px;
+`;
+
+export const PaginationButtons = styled.div`
+  display: flex;
+`;
+
+export const PaginationButton = styled.button`
+  padding: 5px 10px;
+  margin-left: 5px;
+  border: none;
+  background-color: #2b91ff;
+  color: white;
+  cursor: pointer;
+
+  &:disabled {
+    background-color: black;
+    color: white;
+    cursor: not-allowed;
+  }
+`;
+
+export const PaginationControls = styled.div`
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+`;
+
+export const PaginationToggle = styled.div`
+  margin-right: 10px;
+`;
+
+export const ItemsPerPage = styled.div`
+  
+  select {
+    padding: 5px;
+  }
+  & > label{
+    margin-right: 5px;
   }
 `;

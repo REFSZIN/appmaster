@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {ScrollToTopButton,NavItem,LogoImg,LogoContainer,MenuHamburg,HeaderContainer,LogoutButton,SearchContainer,SortButton,SearchContainerBusca,GenreSelect,Button,BoxBtns,SearchMobile,BtnsMobile,
+import { DefaultSortButton ,SearchInput ,ScrollToTopButton,NavItem,LogoImg,LogoContainer,MenuHamburg,HeaderContainer,LogoutButton,SearchContainer,SortButton,SearchContainerBusca,GenreSelect,Button,BoxBtns,SearchMobile,BtnsMobile,
 } from './styled';
 import React, { useContext, useEffect } from 'react';
 import { FaAlignRight, FaArrowUp, FaUser, FaUsersSlash } from 'react-icons/fa';
@@ -16,7 +16,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 
 export default function Header() {
-  const {gamesData,favorites,showFavorites,sorting,selectedGenre,searchQuery,clearContextData,uniqueGenres,setUniqueGenres,filterGames,anchorEl,showScrollButton,setShowScrollButton,showButton,setShowButton,open, handleToggleSortingMobile, handleToggleShowFavoritesMobile, handleGenreSelectMobile, handleScrollToTop, handleClose, handleClick } 
+  const {gamesData,favorites,showFavorites,sorting,selectedGenre,searchQuery,clearContextData,uniqueGenres,setUniqueGenres,filterGames,anchorEl,showScrollButton,setShowScrollButton,showButton,setShowButton,open, handleToggleSortingMobile, handleToggleShowFavoritesMobile, handleGenreSelectMobile, handleScrollToTop, handleClose, handleClick, defaultSorting, handleToggleDefaultSorting, handleSearch } 
   = useContext(GamesContext);
   const { userData } = useContext(UserContext);
   const navigate = useNavigate();
@@ -86,6 +86,13 @@ export default function Header() {
           {userData && (
             <BoxBtns sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
               <SearchContainer>
+              <SearchInput
+                type="text"
+                name="busca"
+                placeholder="Buscar por título"
+                value={searchQuery}
+                onChange={handleSearch}
+              />
               <GenreSelect
                 name="buscaSelect"
                 value={selectedGenre}
@@ -106,6 +113,11 @@ export default function Header() {
                 <SortButton onClick={handleToggleSortingMobile }>
                   Ordenar por Avaliação {sorting === 'desc' ? '↓' : '↑'}
                 </SortButton>
+                <div onClick={handleScrollToTop}>
+                  <DefaultSortButton onClick={handleToggleDefaultSorting}>
+                    Ordenar por {!defaultSorting ? 'Padrão' : 'Alfabética'}
+                  </DefaultSortButton>
+                </div>
               </SearchContainer>
             </BoxBtns>
           )}
@@ -189,6 +201,14 @@ export default function Header() {
           {window.innerWidth < 1180 && (
             <MenuItem>
               <SearchMobile>
+              <SearchInput
+                type="text"
+                name="busca"
+                placeholder="Buscar por título"
+                value={searchQuery}
+                onChange={handleSearch}
+                onClick={(e) => e.stopPropagation()}
+              />
                 <GenreSelect
                   name="buscaSelect"
                   value={selectedGenre}
@@ -212,6 +232,11 @@ export default function Header() {
                     <SortButton onClick={handleToggleSortingMobile}>
                       Ordenar por Avaliação {sorting === 'asc' ? '↑' : '↓'}
                     </SortButton>
+                    <div onClick={handleScrollToTop}>
+                      <DefaultSortButton onClick={handleToggleDefaultSorting}>
+                        Ordenar por {!defaultSorting ? 'Padrão' : 'Alfabética'}
+                      </DefaultSortButton>
+                    </div>
                   </>
                 ) : (
                   <></>

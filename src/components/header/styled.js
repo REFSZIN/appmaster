@@ -12,9 +12,7 @@ export const LogoutButton = styled.button`
   font-weight: bold;
   margin-left: 10px;
   width: 90px;
-  &:hover {
-    background-color: rgb(0, 123, 255);
-  }
+  background-color: rgb(0, 123, 255);
 `;
 
 export const SearchInput = styled.input`
@@ -101,6 +99,7 @@ export const DefaultSortButton = styled.button`
   cursor: pointer;
   margin-left: 10px;
   word-break: break-word;
+  
     @media (max-width: 1180px) {
     width: 100% !important;
     margin: 0px;
@@ -146,6 +145,7 @@ export const GenreSelect = styled.select`
   }
 `;
 
+
 export const Button = styled.button`
   width: 150px;
   margin-right: 20px;
@@ -169,7 +169,9 @@ export const HeaderContainer = styled.header`
   height: 70px;
   width: 100vw;
   display: flex;
+  align-items: center;
   justify-content: space-between;
+  
   align-items: center;
   padding: 0 40px;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);

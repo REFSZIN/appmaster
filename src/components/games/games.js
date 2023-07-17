@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { YTiframe, FavoriteIcon, RatingContainer, StarIcon, GamesContainer, GamesTitle, SearchContainer, DefaultSortButton, ContainerLoader, GifLoader, SearchInput, GenreSelect, Loader, ErrorMessage, NoResultsMessage, ErrorConteiner, GamesGrid, GameCard, GameImage, RefreshButton, GameTitle, GameDescription, GameDetails, GameDetail, GameLink, Button, SortButton, ErrorAviso, SearchContainerBusca, PlayIcon, GameImageContainer, GameImageWrapper, GameImageOverlay }from './styled';
+import { YTiframe, FavoriteIcon, RatingContainer, StarIcon, GamesContainer, GamesTitle, SearchContainer, DefaultSortButton, ContainerLoader, GifLoader, SearchInput, GenreSelect, Loader, ErrorMessage, NoResultsMessage, ErrorConteiner, GamesGrid, GameCard, GameImage, RefreshButton, GameTitle, GameDescription, GameDetails, GameDetail, GameLink, Button, SortButton, ErrorAviso, SearchContainerBusca, PlayIcon, GameImageContainer, GameImageWrapper, GameImageOverlay , PageNavigation, PaginationControls, PaginationButtons, PaginationInfo, PaginationButton, PaginationToggle, ItemsPerPage}from './styled';
 import React, { useEffect, useContext } from 'react';
 import UserContext from '../../contexts/UserContext';
 import GamesContext from '../../contexts/GamesContext';
@@ -11,7 +11,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 
 export default function Games() {
-  const {gamesData,filteredGames,setFilteredGames,favorites,showFavorites,ratings,sorting,setUser,defaultSorting,isFirstRender,setIsFirstRender,selectedGame,setSelectedGame,showVideo,setShowVideo,videoId,setVideoId,imageHeight,setImageHeight,imageRef,errormsg,loading, setLoading,selectedGenre, searchQuery,handleRateGame, filterGames, uniqueGenres, handleCloseVideo, searchYouTubeVideo, fetchData, handleRefresh, handleSearch, handleGenreSelect, handleToggleDefaultSorting, fetchFavorites, fetchRatings, handleToggleFavorite, handleToggleShowFavorites, handleToggleSorting, sortedGames }
+  const {gamesData,filteredGames,setFilteredGames,favorites,showFavorites,ratings,sorting,setUser,defaultSorting,isFirstRender,setIsFirstRender,selectedGame,setSelectedGame,showVideo,setShowVideo,videoId,setVideoId,imageHeight,setImageHeight,imageRef,errormsg,loading, setLoading,selectedGenre, searchQuery,handleRateGame, filterGames, uniqueGenres, handleCloseVideo, searchYouTubeVideo, fetchData, handleRefresh, handleSearch, handleGenreSelect, handleToggleDefaultSorting, fetchFavorites, fetchRatings, handleToggleFavorite, handleToggleShowFavorites, handleToggleSorting, sortedGames,paginationEnabled, currentPage,handlePrevPage,handleNextPage,handlePaginationToggle,handleItemsPerPageChange, itemsPerPage }
   = useContext(GamesContext);
   const { setUserData, userData } = useContext(UserContext);
   
@@ -41,7 +41,7 @@ export default function Games() {
 
   useEffect(() => {
     filterGames();
-  }, [searchQuery, selectedGenre, gamesData, showFavorites, favorites]);
+  }, [searchQuery, selectedGenre, gamesData, showFavorites, favorites, paginationEnabled, currentPage, itemsPerPage ]);
   
   useEffect(() => {
     const updateImageHeight = () => {
@@ -115,6 +115,7 @@ export default function Games() {
           value={searchQuery}
           onChange={handleSearch}
         />
+        
         <GenreSelect
           name="buscaSelect"
           value={selectedGenre}
@@ -146,6 +147,31 @@ export default function Games() {
           <NoResultsMessage>Nenhum resultado encontrado.</NoResultsMessage>
         </ErrorAviso>
       ) : (
+        <>
+        {!showFavorites ?         
+          <PaginationControls>
+          { paginationEnabled ? 
+            <>
+            <PaginationToggle>
+                <label htmlFor="paginationToggle">Despaginar:</label>
+                <input type="checkbox" id="paginationToggle" checked={paginationEnabled} onChange={handlePaginationToggle} />
+            </PaginationToggle>
+            <ItemsPerPage>
+              <label htmlFor="itemsPerPage">Games por página:</label>
+              <select id="itemsPerPage" value={itemsPerPage} onChange={handleItemsPerPageChange}>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="40">40</option>
+                <option value="50">50</option>
+              </select>
+            </ItemsPerPage>
+            </>:
+          <PaginationToggle>
+            <label htmlFor="paginationToggle">Paginar:</label>
+            <input type="checkbox" id="paginationToggle" checked={paginationEnabled} onChange={handlePaginationToggle} />
+          </PaginationToggle> }
+        </PaginationControls> : 'Favoritos'}
         <GamesGrid>
           {sortedGames.map((game) => (
             <GameCard key={game.id}>
@@ -214,6 +240,24 @@ export default function Games() {
             </GameCard>
           ))}
         </GamesGrid>
+        <PageNavigation>
+        { paginationEnabled ?
+        <>
+          <PaginationInfo>
+            {currentPage} de {Math.ceil(gamesData.length / itemsPerPage)}
+          </PaginationInfo>
+          <PaginationButtons>
+            <PaginationButton onClick={handlePrevPage} disabled={currentPage === 1}>
+              Anterior
+            </PaginationButton>
+            <PaginationButton onClick={handleNextPage} disabled={currentPage === Math.ceil(gamesData.length / itemsPerPage)}>
+              Próxima
+            </PaginationButton>
+          </PaginationButtons> 
+        </>
+      : <></> }
+        </PageNavigation>
+      </>
       )}
     </GamesContainer>
   );
