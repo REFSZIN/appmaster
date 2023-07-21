@@ -170,27 +170,55 @@ export function GamesProvider({ children }) {
         ? favorites.filter((id) => id !== gameId)
         : [...favorites, gameId];
       const user = firebase.auth().currentUser;
+    
       if (user) {
-        try {
-          const userRef = firebase.firestore().collection('users').doc('OixewtYxzSFIz8SkoKzx');
-          await userRef.update({ favorites: updatedFavorites });
-          setFavorites(updatedFavorites);
-          setFilteredGames((prevFilteredGames) => {
-            const updatedGames = prevFilteredGames.map((game) => {
-              if (game.id === gameId) {
-                return { ...game, isFavorite: !isFavorite };
-              }
-              return game;
+        const userRef = firebase.firestore().collection('users').doc(user.uid);
+        const userSnapshot = await userRef.get();
+    
+        if (userSnapshot.exists) {
+          try {
+            await userRef.update({ favorites: updatedFavorites });
+            setFavorites(updatedFavorites);
+            setFilteredGames((prevFilteredGames) => {
+              const updatedGames = prevFilteredGames.map((game) => {
+                if (game.id === gameId) {
+                  return { ...game, isFavorite: !isFavorite };
+                }
+                return game;
+              });
+              return [...updatedGames];
             });
-            return [...updatedGames];
-          });
-          if (isFavorite) {
-            toast.info('Game removido dos favoritos.');
-          } else {
-            toast.success('Game adicionado aos favoritos.');
+            if (isFavorite) {
+              toast.info('Game removido dos favoritos.');
+            } else {
+              toast.success('Game adicionado aos favoritos.');
+            }
+          } catch (error) {
+            toast.error('Ocorreu um erro ao atualizar os favoritos.');
           }
-        } catch (error) {
-          toast.error('Ocorreu um erro ao atualizar os favoritos.');
+        } else {
+          // Se o documento do usuário não existir, crie um novo documento com a lista de favoritos
+          const newFavorites = updatedFavorites;
+          try {
+            await userRef.set({ favorites: newFavorites });
+            setFavorites(newFavorites);
+            setFilteredGames((prevFilteredGames) => {
+              const updatedGames = prevFilteredGames.map((game) => {
+                if (game.id === gameId) {
+                  return { ...game, isFavorite: !isFavorite };
+                }
+                return game;
+              });
+              return [...updatedGames];
+            });
+            if (isFavorite) {
+              toast.info('Game removido dos favoritos.');
+            } else {
+              toast.success('Game adicionado aos favoritos.');
+            }
+          } catch (error) {
+            toast.error('Ocorreu um erro ao atualizar os favoritos.');
+          }
         }
       } else {
         toast.error('Realize o login para adicionar favoritos.');
@@ -209,15 +237,15 @@ export function GamesProvider({ children }) {
 
     const handleRateGame = async (gameId, rating) => {
       const user = firebase.auth().currentUser;
-
+    
       if (user) {
-        const userRef = firebase.firestore().collection('users').doc('OixewtYxzSFIz8SkoKzx');
+        const userRef = firebase.firestore().collection('users').doc(user.uid);
         const userSnapshot = await userRef.get();
-
+    
         if (userSnapshot.exists) {
           const userData = userSnapshot.data();
           const previousRating = userData.ratings && userData.ratings[gameId];
-
+    
           let updatedRatings;
           if (previousRating === rating) {
             delete userData.ratings[gameId];
@@ -227,9 +255,15 @@ export function GamesProvider({ children }) {
             updatedRatings = { ...userData.ratings, [gameId]: rating };
             toast.success('Game avaliado.');
           }
-
+    
           await userRef.update({ ratings: updatedRatings });
           setRatings(updatedRatings);
+        } else {
+          // Se o documento do usuário não existir, crie um novo documento com a avaliação
+          const newRatings = { [gameId]: rating };
+          await userRef.set({ ratings: newRatings });
+          setRatings(newRatings);
+          toast.success('Game avaliado.');
         }
       } else {
         toast.error('Realize o login para avaliar.');
@@ -401,7 +435,7 @@ export function GamesProvider({ children }) {
     const fetchFavorites = async () => {
       const user = firebase.auth().currentUser;
       if (user) {
-        const userRef = firebase.firestore().collection('users').doc('OixewtYxzSFIz8SkoKzx');
+        const userRef = firebase.firestore().collection('users').doc(user.uid);
         const snapshot = await userRef.get();
         if (snapshot.exists) {
           const data = snapshot.data();
@@ -413,7 +447,7 @@ export function GamesProvider({ children }) {
     const fetchRatings = async () => {
       const user = firebase.auth().currentUser;
       if (user) {
-        const userRef = firebase.firestore().collection('users').doc('OixewtYxzSFIz8SkoKzx');
+        const userRef = firebase.firestore().collection('users').doc(user.uid);
         const snapshot = await userRef.get();
         if (snapshot.exists) {
           const data = snapshot.data();
